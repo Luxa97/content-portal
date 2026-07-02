@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { createClient } from "@/lib/supabase/server";
-import { niches, responsibles, statuses } from "@/lib/constants";
+import { niches, statuses } from "@/lib/constants";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
 
   const { data: videos } = await supabase
     .from("videos")
-    .select("id,title,niche,platform,status,responsible,created_at")
+    .select("id,title,niche,platform,status,created_at")
     .order("created_at", { ascending: false });
 
   const videoList = videos ?? [];
@@ -21,10 +21,6 @@ export default async function DashboardPage() {
 
   const countByStatus = (status: string) => {
     return videoList.filter((video) => video.status === status).length;
-  };
-
-  const countByResponsible = (responsible: string) => {
-    return videoList.filter((video) => video.responsible === responsible).length;
   };
 
   return (
@@ -71,23 +67,6 @@ export default async function DashboardPage() {
               <p className="text-sm capitalize text-gray-500">{status}</p>
               <strong className="mt-2 block text-3xl text-ink">
                 {countByStatus(status)}
-              </strong>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-6">
-        <h2 className="mb-3 font-semibold text-ink">Videos por responsavel</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {responsibles.map((responsible) => (
-            <div
-              key={responsible}
-              className="rounded-md border border-line bg-white p-5"
-            >
-              <p className="text-sm text-gray-500">{responsible}</p>
-              <strong className="mt-2 block text-3xl text-ink">
-                {countByResponsible(responsible)}
               </strong>
             </div>
           ))}

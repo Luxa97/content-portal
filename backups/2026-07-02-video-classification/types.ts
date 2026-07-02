@@ -1,0 +1,22 @@
+export type Video = {
+  id: string;
+  user_id: string;
+  title: string;
+  niche: string;
+  platform: string;
+  status: string;
+  hook: string | null;
+  product_link: string | null;
+  notes: string | null;
+  file_url: string | null;
+  storage_path: string | null;
+  created_at: string;
+};
+
+export type VideoComment = {
+  id: string;
+  video_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+};
