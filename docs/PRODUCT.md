@@ -62,6 +62,8 @@ O acesso e privado e limitado por e-mails autorizados.
 - Classificacao por responsavel.
 - Classificacao por tipo de video.
 - Campos editoriais para hook, link do produto, observacoes e link do arquivo.
+- Upload do arquivo original de video sem compressao.
+- Download do arquivo original por usuario autenticado.
 - Pagina de hooks iniciais.
 - Pagina de referencias virais iniciais.
 
@@ -92,7 +94,6 @@ O acesso e privado e limitado por e-mails autorizados.
 
 - Filtros na lista de videos.
 - Busca por titulo, hook ou nicho.
-- Upload real de videos no Supabase Storage.
 - Biblioteca editavel de hooks.
 - Biblioteca editavel de referencias virais.
 - Calendario de publicacao.

@@ -118,20 +118,7 @@ Politicas atuais:
 - Usuario pode ler arquivos da sua propria pasta.
 - Usuario pode excluir arquivos da sua propria pasta.
 
-Os arquivos de video sao salvos sem compressao, conversao ou reducao de
-qualidade. O Supabase Storage preserva o arquivo original enviado pelo usuario.
-
-Organizacao dos arquivos:
-
-```text
-videos/
-  user-id/
-    timestamp-nome-do-arquivo.mp4
-```
-
-O valor salvo em `videos.file_url` e o caminho privado do arquivo dentro do
-bucket `videos`. Para baixar, o app cria uma URL assinada temporaria usando a
-sessao autenticada do usuario.
+Upload real de videos ainda nao faz parte da etapa atual do produto.
 
 ## Migrations
 
@@ -140,7 +127,6 @@ Arquivos atuais:
 - `supabase/schema.sql`: schema base.
 - `supabase/videos-crud-migration.sql`: adiciona campos editoriais e ajusta valores do CRUD.
 - `supabase/video-classification-migration.sql`: adiciona `responsible` e `video_type`.
-- `supabase/video-storage-migration.sql`: garante bucket privado `videos` e politicas de upload/download.
 
 ## Boas Praticas
 
@@ -170,4 +156,3 @@ Esses campos ainda nao devem ser criados sem tarefa especifica.
 - Chaves privadas nao devem aparecer no frontend.
 - Buckets devem permanecer privados ate decisao documentada.
 - Toda abertura de permissao deve ser registrada em `docs/DECISIONS.md`.
-- Downloads devem usar URLs assinadas temporarias para usuarios autenticados.

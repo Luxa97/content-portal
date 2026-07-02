@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Edit } from "lucide-react";
 import { DeleteVideoButton } from "@/components/DeleteVideoButton";
-import { DownloadVideoButton } from "@/components/DownloadVideoButton";
 import { EmptyState } from "@/components/EmptyState";
 import type { Video } from "@/lib/types";
 
@@ -48,9 +47,6 @@ export function VideoList({ videos }: { videos: Video[] }) {
             </p>
 
             <div className="flex flex-wrap gap-2">
-              {video.file_url ? (
-                <DownloadVideoButton fileUrl={video.file_url} />
-              ) : null}
               <Link
                 href={`/videos/${video.id}`}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-medium text-ink transition hover:bg-mist"

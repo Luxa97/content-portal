@@ -1,9 +1,5 @@
-"use client";
-
 import { Save } from "lucide-react";
-import { FormEvent, useRef, useState } from "react";
 import { Button } from "@/components/Button";
-import { DownloadVideoButton } from "@/components/DownloadVideoButton";
 import {
   niches,
   platforms,
@@ -11,7 +7,6 @@ import {
   statuses,
   videoTypes
 } from "@/lib/constants";
-import { createClient } from "@/lib/supabase/browser";
 import type { Video } from "@/lib/types";
 
 type VideoFormProps = {
@@ -25,88 +20,8 @@ export function VideoForm({
   video,
   submitLabel = "Salvar video"
 }: VideoFormProps) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [fileUrl, setFileUrl] = useState(video?.file_url ?? "");
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
-
-  async function uploadVideoFile(file: File) {
-    const allowedTypes = [
-      "video/mp4",
-      "video/quicktime",
-      "video/x-m4v",
-      "video/webm"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error("Use um arquivo mp4, mov, m4v ou webm.");
-    }
-
-    const supabase = createClient();
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      throw new Error("Voce precisa estar logado para enviar videos.");
-    }
-
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-    const storagePath = `${user.id}/${Date.now()}-${safeName}`;
-
-    const { error } = await supabase.storage
-      .from("videos")
-      .upload(storagePath, file, {
-        cacheControl: "3600",
-        upsert: false
-      });
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return storagePath;
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const form = formRef.current;
-
-    if (!form) {
-      return;
-    }
-
-    const formData = new FormData(form);
-    const file = formData.get("video_file") as File | null;
-
-    setUploadError("");
-
-    if (file && file.size > 0) {
-      try {
-        setIsUploading(true);
-        const uploadedPath = await uploadVideoFile(file);
-        setFileUrl(uploadedPath);
-        formData.set("file_url", uploadedPath);
-      } catch (error) {
-        setUploadError(
-          error instanceof Error ? error.message : "Nao foi possivel enviar o video."
-        );
-        setIsUploading(false);
-        return;
-      }
-    }
-
-    setIsUploading(false);
-    await action(formData);
-  }
-
   return (
-    <form
-      ref={formRef}
-      onSubmit={handleSubmit}
-      className="grid gap-4 rounded-md border border-line bg-white p-5"
-    >
+    <form action={action} className="grid gap-4 rounded-md border border-line bg-white p-5">
       {video ? <input type="hidden" name="id" value={video.id} /> : null}
 
       <label className="block text-sm font-medium text-gray-700">
@@ -222,46 +137,15 @@ export function VideoForm({
         </label>
 
         <label className="block text-sm font-medium text-gray-700">
-          Arquivo salvo
+          Link do arquivo
           <input
             name="file_url"
-            value={fileUrl}
-            readOnly
-            placeholder="Preenchido automaticamente apos upload"
+            type="url"
+            defaultValue={video?.file_url ?? ""}
+            placeholder="Opcional por enquanto"
             className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
           />
         </label>
-      </div>
-
-      <div className="rounded-md border border-line bg-mist p-4">
-        <label className="block text-sm font-medium text-gray-700">
-          Upload do video original
-          <input
-            name="video_file"
-            type="file"
-            accept="video/mp4,video/quicktime,video/x-m4v,video/webm,.mp4,.mov,.m4v,.webm"
-            className="mt-2 block w-full text-sm text-gray-700 file:mr-3 file:h-10 file:rounded-md file:border-0 file:bg-white file:px-3 file:text-sm file:font-medium"
-          />
-        </label>
-        <p className="mt-2 text-xs text-gray-600">
-          Formatos aceitos: mp4, mov, m4v e webm. Recomendado: ate 500 MB por
-          arquivo, conforme o limite configurado no Supabase.
-        </p>
-        <p className="mt-1 text-xs text-gray-600">
-          O arquivo original sera salvo sem compressao, conversao ou reducao de
-          qualidade.
-        </p>
-        {isUploading ? (
-          <p className="mt-2 text-sm font-medium text-ink">Enviando video...</p>
-        ) : null}
-        {uploadError ? (
-          <p className="mt-2 text-sm font-medium text-red-600">{uploadError}</p>
-        ) : null}
-        {fileUrl ? (
-          <div className="mt-3">
-            <DownloadVideoButton fileUrl={fileUrl} />
-          </div>
-        ) : null}
       </div>
 
       <label className="block text-sm font-medium text-gray-700">
@@ -274,9 +158,9 @@ export function VideoForm({
         />
       </label>
 
-      <Button className="w-fit gap-2" disabled={isUploading}>
+      <Button className="w-fit gap-2">
         <Save size={16} />
-        {isUploading ? "Enviando..." : submitLabel}
+        {submitLabel}
       </Button>
     </form>
   );

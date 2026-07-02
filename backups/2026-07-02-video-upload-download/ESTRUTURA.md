@@ -43,7 +43,6 @@ Arquivos principais:
 - `VideoForm.tsx`: formulario de criacao e edicao de videos.
 - `VideoList.tsx`: lista de videos.
 - `DeleteVideoButton.tsx`: exclusao com confirmacao no navegador.
-- `DownloadVideoButton.tsx`: gera link temporario para baixar o video original.
 
 ### `lib/`
 
@@ -66,7 +65,6 @@ Arquivos principais:
 - `schema.sql`: schema base para novos ambientes.
 - `videos-crud-migration.sql`: migration do CRUD de videos.
 - `video-classification-migration.sql`: migration de responsavel e tipo de video.
-- `video-storage-migration.sql`: migration do bucket privado de videos.
 
 Novas migrations devem ser criadas nesta pasta e documentadas em
 `docs/DATABASE.md`.
@@ -116,8 +114,6 @@ Padrao recomendado:
 - Listagem: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
-- Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho em `file_url`.
-- Download: `DownloadVideoButton` cria uma URL assinada temporaria para baixar o arquivo original.
 - Dados persistem na tabela `videos`.
 
 ## Onde Criar Novos Modulos

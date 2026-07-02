@@ -2,74 +2,76 @@
 
 Status usados:
 
-- ✅ Concluido
-- 🟡 Em andamento
-- ⬜ Planejado
+- Concluido
+- Em andamento
+- Planejado
 
 ## Infraestrutura
 
-- ✅ Criar projeto Next.js com TypeScript.
-- ✅ Configurar Tailwind CSS.
-- ✅ Configurar Supabase.
-- ✅ Configurar variaveis de ambiente.
-- ✅ Configurar Git e GitHub como fonte oficial do codigo.
-- ✅ Configurar Vercel como deploy oficial.
-- ✅ Criar documentacao profissional em `docs/`.
+- Concluido: Criar projeto Next.js com TypeScript.
+- Concluido: Configurar Tailwind CSS.
+- Concluido: Configurar Supabase.
+- Concluido: Configurar variaveis de ambiente.
+- Concluido: Configurar Git e GitHub como fonte oficial do codigo.
+- Concluido: Configurar Vercel como deploy oficial.
+- Concluido: Criar documentacao profissional em `docs/`.
 
 ## MVP
 
-- ✅ Login com Supabase Auth.
-- ✅ Portal privado com rotas protegidas.
-- ✅ Cadastro restrito por e-mails autorizados.
-- ✅ Dashboard inicial.
-- ✅ CRUD de videos.
-- ✅ Classificacao por nicho.
-- ✅ Classificacao por plataforma.
-- ✅ Classificacao por status.
-- ✅ Classificacao por responsavel.
-- ✅ Classificacao por tipo de video.
-- ✅ Pagina de hooks.
-- ✅ Pagina de referencias virais.
+- Concluido: Login com Supabase Auth.
+- Concluido: Portal privado com rotas protegidas.
+- Concluido: Cadastro restrito por e-mails autorizados.
+- Concluido: Dashboard inicial.
+- Concluido: CRUD de videos.
+- Concluido: Classificacao por nicho.
+- Concluido: Classificacao por plataforma.
+- Concluido: Classificacao por status.
+- Concluido: Classificacao por responsavel.
+- Concluido: Classificacao por tipo de video.
+- Concluido: Upload e download de video original sem compressao.
+- Concluido: Pagina de hooks.
+- Concluido: Pagina de referencias virais.
 
 ## Organizacao De Conteudo
 
-- ✅ Campos editoriais para hook, link do produto, observacoes e link do arquivo.
-- 🟡 Melhorar documentacao e memoria do projeto.
-- ⬜ Criar filtros na pagina de videos.
-- ⬜ Criar busca por titulo, hook e nicho.
-- ⬜ Criar biblioteca editavel de hooks.
-- ⬜ Criar biblioteca editavel de referencias virais.
-- ⬜ Criar calendario simples de publicacao.
+- Concluido: Campos editoriais para hook, link do produto, observacoes e link do arquivo.
+- Concluido: Upload real de video no Supabase Storage.
+- Em andamento: Melhorar documentacao e memoria do projeto.
+- Planejado: Criar filtros na pagina de videos.
+- Planejado: Criar busca por titulo, hook e nicho.
+- Planejado: Criar biblioteca editavel de hooks.
+- Planejado: Criar biblioteca editavel de referencias virais.
+- Planejado: Criar calendario simples de publicacao.
 
 ## IA
 
-- ⬜ Gerar sugestoes de hooks.
-- ⬜ Gerar ideias de roteiros.
-- ⬜ Classificar referencias por padrao criativo.
-- ⬜ Sugerir proximos videos com base no historico.
+- Planejado: Gerar sugestoes de hooks.
+- Planejado: Gerar ideias de roteiros.
+- Planejado: Classificar referencias por padrao criativo.
+- Planejado: Sugerir proximos videos com base no historico.
 
 IA nao deve ser adicionada antes da base operacional estar estavel.
 
 ## Analytics
 
-- ⬜ Medir quantidade de videos por status.
-- ⬜ Medir quantidade de videos por responsavel.
-- ⬜ Medir quantidade de videos por tipo.
-- ⬜ Registrar data de postagem.
-- ⬜ Registrar metricas manuais por plataforma.
-- ⬜ Criar dashboard de performance.
+- Planejado: Medir quantidade de videos por status.
+- Planejado: Medir quantidade de videos por responsavel.
+- Planejado: Medir quantidade de videos por tipo.
+- Planejado: Registrar data de postagem.
+- Planejado: Registrar metricas manuais por plataforma.
+- Planejado: Criar dashboard de performance.
 
 ## Automacoes
 
-- ⬜ Lembretes de videos parados em edicao.
-- ⬜ Lembretes de conteudos prontos para postagem.
-- ⬜ Fluxo de revisao antes de postar.
-- ⬜ Integracoes externas futuras.
+- Planejado: Lembretes de videos parados em edicao.
+- Planejado: Lembretes de conteudos prontos para postagem.
+- Planejado: Fluxo de revisao antes de postar.
+- Planejado: Integracoes externas futuras.
 
 ## Escalabilidade
 
-- ⬜ Melhorar permissoes por perfil.
-- ⬜ Criar organizacoes ou workspaces se houver mais usuarios.
-- ⬜ Separar dados por equipe.
-- ⬜ Criar auditoria de alteracoes importantes.
-- ⬜ Preparar padrao de testes automatizados.
+- Planejado: Melhorar permissoes por perfil.
+- Planejado: Criar organizacoes ou workspaces se houver mais usuarios.
+- Planejado: Separar dados por equipe.
+- Planejado: Criar auditoria de alteracoes importantes.
+- Planejado: Preparar padrao de testes automatizados.

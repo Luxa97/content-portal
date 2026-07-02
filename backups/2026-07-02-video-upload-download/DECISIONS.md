@@ -88,20 +88,3 @@ Decisao: a pasta `docs/` e a memoria oficial do projeto.
 
 Motivo: nenhuma decisao importante deve depender apenas de conversas. Toda
 mudanca estrutural, funcional ou arquitetural deve ser registrada.
-
-## ADR-011 - Videos originais em Storage privado
-
-Data: 2026-07-02
-
-Decisao: arquivos de video originais serao armazenados no bucket privado
-`videos` do Supabase Storage.
-
-Motivo: preservar a qualidade original dos arquivos e manter acesso restrito a
-usuarios autenticados.
-
-Consequencias:
-
-- O app nao comprime, converte ou modifica o arquivo enviado.
-- `videos.file_url` armazena o caminho privado no bucket.
-- Downloads usam URLs assinadas temporarias.
-- O bucket nao deve ser publico sem nova decisao documentada.

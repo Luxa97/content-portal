@@ -11,14 +11,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Registrado fluxo obrigatorio para tarefas futuras.
 - Registradas regras de arquitetura, seguranca, migrations e backups.
 
-## 2026-07-02 - v0.3.1 - Upload e download de videos
-
-- Adicionado upload de arquivo original de video no formulario de criacao e edicao.
-- Adicionado download do video original por URL assinada temporaria.
-- Criada migration `supabase/video-storage-migration.sql`.
-- Documentada decisao de manter o bucket `videos` privado.
-- Mantido `file_url` como caminho privado do arquivo no Supabase Storage.
-
 ## 2026-07-02 - v0.3.0 - Portal privado
 
 - Adicionada lista de e-mails autorizados em `lib/allowed-users.ts`.

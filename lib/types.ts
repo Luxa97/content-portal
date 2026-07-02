@@ -5,6 +5,8 @@ export type Video = {
   niche: string;
   platform: string;
   status: string;
+  responsible: string | null;
+  video_type: string | null;
   hook: string | null;
   product_link: string | null;
   notes: string | null;
