@@ -27,7 +27,6 @@ Arquivos principais:
 - `app/(private)/videos/page.tsx`: pagina para criar e listar videos.
 - `app/(private)/videos/[id]/page.tsx`: pagina para editar video.
 - `app/(private)/videos/actions.ts`: Server Actions de videos.
-- `app/(private)/media/page.tsx`: Media Library inicial com arquivos enviados.
 - `app/(private)/hooks/page.tsx`: pagina de hooks.
 - `app/(private)/referencias/page.tsx`: pagina de referencias virais.
 
@@ -119,25 +118,7 @@ Padrao recomendado:
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
 - Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho em `file_url`.
 - Download: `DownloadVideoButton` cria uma URL assinada temporaria para baixar o arquivo original.
-- Media Library: `/media` lista videos que possuem `file_url` e reaproveita o download seguro.
 - Dados persistem na tabela `videos`.
-
-## Media Tools Futuro
-
-Ferramentas de midia planejadas devem ficar fora da Vercel quando envolverem
-processamento pesado, como FFmpeg.
-
-Funcoes planejadas:
-
-- Compressao.
-- Conversao.
-- Extracao de audio.
-- Thumbnail.
-- Corte de video.
-- Juncao de videos.
-
-A Vercel deve cuidar da interface e orquestracao leve. O processamento pesado
-deve ser feito em servico separado no futuro.
 
 ## Onde Criar Novos Modulos
 

@@ -133,9 +133,6 @@ O valor salvo em `videos.file_url` e o caminho privado do arquivo dentro do
 bucket `videos`. Para baixar, o app cria uma URL assinada temporaria usando a
 sessao autenticada do usuario.
 
-A Media Library inicial lista registros da tabela `videos` que possuem
-`file_url`. Ainda nao existe uma tabela separada de assets de midia.
-
 ## Migrations
 
 Arquivos atuais:
@@ -144,22 +141,6 @@ Arquivos atuais:
 - `supabase/videos-crud-migration.sql`: adiciona campos editoriais e ajusta valores do CRUD.
 - `supabase/video-classification-migration.sql`: adiciona `responsible` e `video_type`.
 - `supabase/video-storage-migration.sql`: garante bucket privado `videos` e politicas de upload/download.
-
-## Media Library
-
-Versao atual:
-
-- Usa a tabela `videos`.
-- Lista apenas videos com `file_url`.
-- Usa o bucket privado `videos`.
-- Baixa arquivos por URL assinada temporaria.
-
-Possivel evolucao futura:
-
-- Criar tabela `media_assets`.
-- Relacionar multiplos arquivos a um video.
-- Registrar metadados como tamanho, duracao, codec e formato.
-- Registrar thumbnails geradas em processamento externo.
 
 ## Boas Praticas
 

@@ -11,14 +11,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Registrado fluxo obrigatorio para tarefas futuras.
 - Registradas regras de arquitetura, seguranca, migrations e backups.
 
-## 2026-07-02 - v0.3.2 - Media Library inicial
-
-- Criada pagina `/media` para listar arquivos originais vinculados aos videos.
-- Adicionada Media Library ao menu privado.
-- Protegida rota `/media` no middleware.
-- Documentada arquitetura futura de Media Tools.
-- Registrado que processamento pesado de video deve acontecer fora da Vercel.
-
 ## 2026-07-02 - v0.3.1 - Upload e download de videos
 
 - Adicionado upload de arquivo original de video no formulario de criacao e edicao.

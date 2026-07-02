@@ -29,7 +29,6 @@ Status usados:
 - Concluido: Classificacao por responsavel.
 - Concluido: Classificacao por tipo de video.
 - Concluido: Upload e download de video original sem compressao.
-- Concluido: Media Library inicial em `/media`.
 - Concluido: Pagina de hooks.
 - Concluido: Pagina de referencias virais.
 
@@ -37,24 +36,12 @@ Status usados:
 
 - Concluido: Campos editoriais para hook, link do produto, observacoes e link do arquivo.
 - Concluido: Upload real de video no Supabase Storage.
-- Concluido: Listagem inicial de arquivos enviados.
 - Em andamento: Melhorar documentacao e memoria do projeto.
 - Planejado: Criar filtros na pagina de videos.
 - Planejado: Criar busca por titulo, hook e nicho.
 - Planejado: Criar biblioteca editavel de hooks.
 - Planejado: Criar biblioteca editavel de referencias virais.
 - Planejado: Criar calendario simples de publicacao.
-
-## Media Tools
-
-- Planejado: Compressao de video em servico separado.
-- Planejado: Conversao de formato em servico separado.
-- Planejado: Extracao de audio.
-- Planejado: Geracao de thumbnail.
-- Planejado: Corte de video.
-- Planejado: Juntar videos.
-
-Processamento pesado com FFmpeg nao deve rodar na Vercel nesta fase.
 
 ## IA
 

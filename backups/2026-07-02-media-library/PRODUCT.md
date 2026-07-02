@@ -64,7 +64,6 @@ O acesso e privado e limitado por e-mails autorizados.
 - Campos editoriais para hook, link do produto, observacoes e link do arquivo.
 - Upload do arquivo original de video sem compressao.
 - Download do arquivo original por usuario autenticado.
-- Media Library inicial para listar arquivos enviados.
 - Pagina de hooks iniciais.
 - Pagina de referencias virais iniciais.
 
@@ -128,8 +127,6 @@ O acesso e privado e limitado por e-mails autorizados.
 
 - Modulo de calendario.
 - Modulo de biblioteca de referencias.
-- Modulo de Media Library avancada.
-- Modulo de Media Tools em servico externo.
 - Modulo de biblioteca de produtos.
 - Modulo de analytics.
 - Modulo de IA para apoio criativo.
