@@ -64,7 +64,7 @@ O acesso e privado e limitado por e-mails autorizados.
 - Campos editoriais para hook, link do produto, observacoes e link do arquivo.
 - Upload do arquivo original de video sem compressao.
 - Download do arquivo original por usuario autenticado.
-- Media Library inicial para listar arquivos enviados e seus metadados basicos.
+- Media Library inicial para listar arquivos enviados.
 - Pagina de hooks iniciais.
 - Pagina de referencias virais iniciais.
 

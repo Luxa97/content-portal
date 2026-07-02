@@ -49,10 +49,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
 
             <div className="flex flex-wrap gap-2">
               {video.file_url ? (
-                <DownloadVideoButton
-                  fileUrl={video.file_url}
-                  originalFilename={video.original_filename}
-                />
+                <DownloadVideoButton fileUrl={video.file_url} />
               ) : null}
               <Link
                 href={`/videos/${video.id}`}

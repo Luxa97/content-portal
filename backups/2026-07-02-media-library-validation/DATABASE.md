@@ -32,10 +32,6 @@ Campos:
 - `notes`: observacoes livres.
 - `file_url`: link opcional do arquivo.
 - `storage_path`: caminho futuro do arquivo no Supabase Storage.
-- `original_filename`: nome original do arquivo enviado.
-- `file_size`: tamanho do arquivo em bytes.
-- `mime_type`: tipo MIME informado pelo navegador.
-- `uploaded_at`: data e hora do upload.
 - `created_at`: data de criacao.
 
 Valores atuais de `niche`:
@@ -140,15 +136,6 @@ sessao autenticada do usuario.
 A Media Library inicial lista registros da tabela `videos` que possuem
 `file_url`. Ainda nao existe uma tabela separada de assets de midia.
 
-Metadados salvos por upload:
-
-- Nome original do arquivo.
-- Tamanho do arquivo.
-- Tipo MIME.
-- Caminho no Storage.
-- Data de upload.
-- Dono do registro por `videos.user_id`.
-
 ## Migrations
 
 Arquivos atuais:
@@ -157,7 +144,6 @@ Arquivos atuais:
 - `supabase/videos-crud-migration.sql`: adiciona campos editoriais e ajusta valores do CRUD.
 - `supabase/video-classification-migration.sql`: adiciona `responsible` e `video_type`.
 - `supabase/video-storage-migration.sql`: garante bucket privado `videos` e politicas de upload/download.
-- `supabase/video-metadata-migration.sql`: adiciona metadados do arquivo original.
 
 ## Media Library
 
@@ -167,7 +153,6 @@ Versao atual:
 - Lista apenas videos com `file_url`.
 - Usa o bucket privado `videos`.
 - Baixa arquivos por URL assinada temporaria.
-- Mostra nome original, tamanho e data de upload quando esses dados existem.
 
 Possivel evolucao futura:
 

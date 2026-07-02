@@ -16,10 +16,6 @@ create table public.videos (
   notes text,
   file_url text,
   storage_path text,
-  original_filename text,
-  file_size bigint,
-  mime_type text,
-  uploaded_at timestamptz,
   created_at timestamptz not null default now()
 );
 

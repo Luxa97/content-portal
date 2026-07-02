@@ -12,10 +12,6 @@ export type Video = {
   notes: string | null;
   file_url: string | null;
   storage_path: string | null;
-  original_filename: string | null;
-  file_size: number | null;
-  mime_type: string | null;
-  uploaded_at: string | null;
   created_at: string;
 };
 

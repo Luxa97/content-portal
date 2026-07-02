@@ -23,7 +23,7 @@ export default async function VideosPage({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <PageHeader
           title="Videos"
-          description="Crie, edite e acompanhe a producao de conteudo."
+          description="Crie, edite e acompanhe registros de conteudo."
         />
 
         <Link

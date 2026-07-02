@@ -8,21 +8,12 @@ function getFileName(fileUrl: string) {
   return fileUrl.split("/").pop() ?? fileUrl;
 }
 
-function formatFileSize(size: number | null) {
-  if (!size) {
-    return "-";
-  }
-
-  const megabytes = size / 1024 / 1024;
-  return `${megabytes.toFixed(1)} MB`;
-}
-
 export default async function MediaPage() {
   const supabase = await createClient();
 
   const { data: videos } = await supabase
     .from("videos")
-    .select("id,title,niche,platform,file_url,original_filename,file_size,mime_type,uploaded_at,created_at")
+    .select("id,title,niche,platform,file_url,created_at")
     .not("file_url", "is", null)
     .neq("file_url", "")
     .order("created_at", { ascending: false });
@@ -38,13 +29,11 @@ export default async function MediaPage() {
 
       {mediaItems.length ? (
         <div className="overflow-hidden rounded-md border border-line bg-white">
-          <div className="hidden grid-cols-[1fr_130px_100px_1fr_100px_130px_150px] gap-3 border-b border-line bg-mist px-5 py-3 text-xs font-semibold uppercase text-gray-500 xl:grid">
+          <div className="hidden grid-cols-[1fr_140px_110px_1fr_150px] gap-3 border-b border-line bg-mist px-5 py-3 text-xs font-semibold uppercase text-gray-500 lg:grid">
             <span>Video</span>
             <span>Nicho</span>
             <span>Plataforma</span>
             <span>Arquivo</span>
-            <span>Tamanho</span>
-            <span>Upload</span>
             <span>Download</span>
           </div>
 
@@ -52,7 +41,7 @@ export default async function MediaPage() {
             {mediaItems.map((video) => (
               <article
                 key={video.id}
-                className="grid gap-3 px-5 py-4 xl:grid-cols-[1fr_130px_100px_1fr_100px_130px_150px] xl:items-center"
+                className="grid gap-3 px-5 py-4 lg:grid-cols-[1fr_140px_110px_1fr_150px] lg:items-center"
               >
                 <Link
                   href={`/videos/${video.id}`}
@@ -63,20 +52,9 @@ export default async function MediaPage() {
                 <p className="text-sm text-gray-700">{video.niche}</p>
                 <p className="text-sm text-gray-700">{video.platform}</p>
                 <p className="break-all text-sm text-gray-600">
-                  {video.original_filename || getFileName(video.file_url)}
+                  {getFileName(video.file_url)}
                 </p>
-                <p className="text-sm text-gray-600">
-                  {formatFileSize(video.file_size)}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {video.uploaded_at
-                    ? new Date(video.uploaded_at).toLocaleDateString("pt-BR")
-                    : "-"}
-                </p>
-                <DownloadVideoButton
-                  fileUrl={video.file_url}
-                  originalFilename={video.original_filename}
-                />
+                <DownloadVideoButton fileUrl={video.file_url} />
               </article>
             ))}
           </div>

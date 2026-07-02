@@ -103,7 +103,6 @@ Consequencias:
 
 - O app nao comprime, converte ou modifica o arquivo enviado.
 - `videos.file_url` armazena o caminho privado no bucket.
-- Metadados do arquivo original sao salvos no registro do video.
 - Downloads usam URLs assinadas temporarias.
 - O bucket nao deve ser publico sem nova decisao documentada.
 

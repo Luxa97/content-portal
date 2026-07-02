@@ -27,12 +27,6 @@ export function VideoForm({
 }: VideoFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [fileUrl, setFileUrl] = useState(video?.file_url ?? "");
-  const [originalFilename, setOriginalFilename] = useState(
-    video?.original_filename ?? ""
-  );
-  const [fileSize, setFileSize] = useState(video?.file_size?.toString() ?? "");
-  const [mimeType, setMimeType] = useState(video?.mime_type ?? "");
-  const [uploadedAt, setUploadedAt] = useState(video?.uploaded_at ?? "");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
@@ -43,13 +37,8 @@ export function VideoForm({
       "video/x-m4v",
       "video/webm"
     ];
-    const allowedExtensions = [".mp4", ".mov", ".m4v", ".webm"];
-    const lowerName = file.name.toLowerCase();
-    const hasAllowedExtension = allowedExtensions.some((extension) =>
-      lowerName.endsWith(extension)
-    );
 
-    if (!hasAllowedExtension || (file.type && !allowedTypes.includes(file.type))) {
+    if (!allowedTypes.includes(file.type)) {
       throw new Error("Use um arquivo mp4, mov, m4v ou webm.");
     }
 
@@ -76,13 +65,7 @@ export function VideoForm({
       throw new Error(error.message);
     }
 
-    return {
-      storagePath,
-      originalFilename: file.name,
-      fileSize: file.size.toString(),
-      mimeType: file.type || "video/unknown",
-      uploadedAt: new Date().toISOString()
-    };
+    return storagePath;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -96,28 +79,15 @@ export function VideoForm({
 
     const formData = new FormData(form);
     const file = formData.get("video_file") as File | null;
-    let nextFileUrl = fileUrl;
-    let nextOriginalFilename = originalFilename;
-    let nextFileSize = fileSize;
-    let nextMimeType = mimeType;
-    let nextUploadedAt = uploadedAt;
 
     setUploadError("");
 
     if (file && file.size > 0) {
       try {
         setIsUploading(true);
-        const uploadedFile = await uploadVideoFile(file);
-        nextFileUrl = uploadedFile.storagePath;
-        nextOriginalFilename = uploadedFile.originalFilename;
-        nextFileSize = uploadedFile.fileSize;
-        nextMimeType = uploadedFile.mimeType;
-        nextUploadedAt = uploadedFile.uploadedAt;
-        setFileUrl(uploadedFile.storagePath);
-        setOriginalFilename(uploadedFile.originalFilename);
-        setFileSize(uploadedFile.fileSize);
-        setMimeType(uploadedFile.mimeType);
-        setUploadedAt(uploadedFile.uploadedAt);
+        const uploadedPath = await uploadVideoFile(file);
+        setFileUrl(uploadedPath);
+        formData.set("file_url", uploadedPath);
       } catch (error) {
         setUploadError(
           error instanceof Error ? error.message : "Nao foi possivel enviar o video."
@@ -128,11 +98,6 @@ export function VideoForm({
     }
 
     setIsUploading(false);
-    formData.set("file_url", nextFileUrl);
-    formData.set("original_filename", nextOriginalFilename);
-    formData.set("file_size", nextFileSize);
-    formData.set("mime_type", nextMimeType);
-    formData.set("uploaded_at", nextUploadedAt);
     await action(formData);
   }
 
@@ -143,10 +108,6 @@ export function VideoForm({
       className="grid gap-4 rounded-md border border-line bg-white p-5"
     >
       {video ? <input type="hidden" name="id" value={video.id} /> : null}
-      <input type="hidden" name="original_filename" value={originalFilename} />
-      <input type="hidden" name="file_size" value={fileSize} />
-      <input type="hidden" name="mime_type" value={mimeType} />
-      <input type="hidden" name="uploaded_at" value={uploadedAt} />
 
       <label className="block text-sm font-medium text-gray-700">
         Titulo
@@ -298,10 +259,7 @@ export function VideoForm({
         ) : null}
         {fileUrl ? (
           <div className="mt-3">
-            <DownloadVideoButton
-              fileUrl={fileUrl}
-              originalFilename={originalFilename}
-            />
+            <DownloadVideoButton fileUrl={fileUrl} />
           </div>
         ) : null}
       </div>

@@ -111,35 +111,16 @@ Padrao recomendado:
 - O middleware protege `/dashboard`, `/videos`, `/hooks` e `/referencias`.
 - Supabase Auth gerencia a sessao.
 
-## Fluxo De Videos E Media
+## Fluxo De Videos
 
-- Videos: `/videos` e responsavel pelos registros de conteudo.
-- Media Library: `/media` e responsavel pelos arquivos vinculados aos videos.
-- Criacao de registro: `/videos` usa `VideoForm` com `createVideo`.
-- Listagem de registros: `/videos` usa `VideoList`.
+- Criacao: `/videos` usa `VideoForm` com `createVideo`.
+- Listagem: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
 - Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho em `file_url`.
 - Download: `DownloadVideoButton` cria uma URL assinada temporaria para baixar o arquivo original.
 - Media Library: `/media` lista videos que possuem `file_url` e reaproveita o download seguro.
 - Dados persistem na tabela `videos`.
-
-## Fluxo De Upload E Download
-
-Upload:
-
-1. Usuario autenticado seleciona um arquivo em `VideoForm`.
-2. O app valida extensao e tipo permitido: mp4, mov, m4v ou webm.
-3. O arquivo original e enviado ao bucket privado `videos`.
-4. O caminho privado e salvo em `videos.file_url` e `videos.storage_path`.
-5. Metadados sao salvos no registro: nome original, tamanho, MIME e data.
-
-Download:
-
-1. Usuario autenticado clica em `Baixar video`.
-2. `DownloadVideoButton` pede uma URL assinada temporaria ao Supabase.
-3. O navegador baixa o arquivo original usando a URL assinada.
-4. O arquivo nao e comprimido, convertido ou modificado.
 
 ## Media Tools Futuro
 

@@ -15,10 +15,6 @@ export async function createVideo(formData: FormData) {
   const productLink = String(formData.get("product_link") ?? "");
   const notes = String(formData.get("notes") ?? "");
   const fileUrl = String(formData.get("file_url") ?? "");
-  const originalFilename = String(formData.get("original_filename") ?? "");
-  const fileSize = Number(formData.get("file_size") ?? 0);
-  const mimeType = String(formData.get("mime_type") ?? "");
-  const uploadedAt = String(formData.get("uploaded_at") ?? "");
   const supabase = await createClient();
 
   const {
@@ -40,12 +36,7 @@ export async function createVideo(formData: FormData) {
     hook,
     product_link: productLink,
     notes,
-    file_url: fileUrl,
-    storage_path: fileUrl || null,
-    original_filename: originalFilename || null,
-    file_size: fileSize > 0 ? fileSize : null,
-    mime_type: mimeType || null,
-    uploaded_at: uploadedAt || null
+    file_url: fileUrl
   });
 
   if (error) {
@@ -68,10 +59,6 @@ export async function updateVideo(formData: FormData) {
   const productLink = String(formData.get("product_link") ?? "");
   const notes = String(formData.get("notes") ?? "");
   const fileUrl = String(formData.get("file_url") ?? "");
-  const originalFilename = String(formData.get("original_filename") ?? "");
-  const fileSize = Number(formData.get("file_size") ?? 0);
-  const mimeType = String(formData.get("mime_type") ?? "");
-  const uploadedAt = String(formData.get("uploaded_at") ?? "");
   const supabase = await createClient();
 
   const {
@@ -94,12 +81,7 @@ export async function updateVideo(formData: FormData) {
       hook,
       product_link: productLink,
       notes,
-      file_url: fileUrl,
-      storage_path: fileUrl || null,
-      original_filename: originalFilename || null,
-      file_size: fileSize > 0 ? fileSize : null,
-      mime_type: mimeType || null,
-      uploaded_at: uploadedAt || null
+      file_url: fileUrl
     })
     .eq("id", id)
     .eq("user_id", user.id);

@@ -5,17 +5,11 @@ import { useState } from "react";
 import { Button } from "@/components/Button";
 import { createClient } from "@/lib/supabase/browser";
 
-function getFileName(filePath: string, originalFilename?: string | null) {
-  return originalFilename || filePath.split("/").pop() || "video-original";
+function getFileName(filePath: string) {
+  return filePath.split("/").pop() || "video-original";
 }
 
-export function DownloadVideoButton({
-  fileUrl,
-  originalFilename
-}: {
-  fileUrl: string;
-  originalFilename?: string | null;
-}) {
+export function DownloadVideoButton({ fileUrl }: { fileUrl: string }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState("");
 
@@ -23,27 +17,17 @@ export function DownloadVideoButton({
     setIsDownloading(true);
     setError("");
 
-    if (!fileUrl || fileUrl.startsWith("http")) {
-      setError("Arquivo privado invalido para download.");
+    if (fileUrl.startsWith("http")) {
+      window.location.href = fileUrl;
       setIsDownloading(false);
       return;
     }
 
     const supabase = createClient();
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setError("Voce precisa estar logado para baixar o video.");
-      setIsDownloading(false);
-      return;
-    }
-
     const { data, error: downloadError } = await supabase.storage
       .from("videos")
       .createSignedUrl(fileUrl, 60, {
-        download: getFileName(fileUrl, originalFilename)
+        download: getFileName(fileUrl)
       });
 
     if (downloadError || !data?.signedUrl) {
