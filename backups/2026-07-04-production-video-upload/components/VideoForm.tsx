@@ -26,7 +26,7 @@ export function VideoForm({
   submitLabel = "Salvar video"
 }: VideoFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [fileUrl, setFileUrl] = useState(video?.storage_path ?? video?.file_url ?? "");
+  const [fileUrl, setFileUrl] = useState(video?.file_url ?? "");
   const [originalFilename, setOriginalFilename] = useState(
     video?.original_filename ?? ""
   );
@@ -35,7 +35,6 @@ export function VideoForm({
   const [uploadedAt, setUploadedAt] = useState(video?.uploaded_at ?? "");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  const [uploadSuccess, setUploadSuccess] = useState("");
 
   async function uploadVideoFile(file: File) {
     const allowedTypes = [
@@ -104,7 +103,6 @@ export function VideoForm({
     let nextUploadedAt = uploadedAt;
 
     setUploadError("");
-    setUploadSuccess("");
 
     if (file && file.size > 0) {
       try {
@@ -120,7 +118,6 @@ export function VideoForm({
         setFileSize(uploadedFile.fileSize);
         setMimeType(uploadedFile.mimeType);
         setUploadedAt(uploadedFile.uploadedAt);
-        setUploadSuccess("Video enviado com sucesso.");
       } catch (error) {
         setUploadError(
           error instanceof Error ? error.message : "Nao foi possivel enviar o video."
@@ -299,23 +296,11 @@ export function VideoForm({
         {uploadError ? (
           <p className="mt-2 text-sm font-medium text-red-600">{uploadError}</p>
         ) : null}
-        {uploadSuccess ? (
-          <p className="mt-2 text-sm font-medium text-green-700">
-            {uploadSuccess}
-          </p>
-        ) : null}
-        {originalFilename ? (
-          <p className="mt-2 text-xs text-gray-600">
-            Arquivo: {originalFilename}
-            {fileSize ? ` (${(Number(fileSize) / 1024 / 1024).toFixed(1)} MB)` : ""}
-          </p>
-        ) : null}
         {fileUrl ? (
           <div className="mt-3">
             <DownloadFileButton
               fileUrl={fileUrl}
               originalFilename={originalFilename}
-              label="Baixar video"
             />
           </div>
         ) : null}

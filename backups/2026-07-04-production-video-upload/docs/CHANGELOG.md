@@ -2,14 +2,6 @@
 
 Historico relevante do Content Portal, organizado por data e versao.
 
-## 2026-07-04 - v0.4.1 - Upload/download de video mais confiavel
-
-- Reforcada a validacao de caminhos privados antes de salvar arquivos no banco.
-- A lista de videos passou a mostrar nome e tamanho do arquivo enviado quando disponiveis.
-- O download agora informa quando esta gerando o link assinado e quando o download foi iniciado.
-- A pagina `/media` passou a exibir mensagens de sucesso e erro do upload.
-- Confirmado que o app continua usando bucket privado e URLs assinadas temporarias.
-
 ## 2026-07-02 - v0.4.0 - Documentacao profissional
 
 - Reescrita completa da documentacao do projeto.

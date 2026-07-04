@@ -4,12 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-const allowedAssetTypes = ["video", "image", "file"];
-
-function isValidPrivateStoragePath(path: string, userId: string) {
-  return Boolean(path) && !path.startsWith("http") && path.startsWith(`${userId}/`);
-}
-
 export async function createMediaAsset(formData: FormData) {
   const title = String(formData.get("title") ?? "");
   const assetType = String(formData.get("asset_type") ?? "file");
@@ -24,13 +18,7 @@ export async function createMediaAsset(formData: FormData) {
     data: { user }
   } = await supabase.auth.getUser();
 
-  if (
-    !user ||
-    !isValidPrivateStoragePath(storagePath, user.id) ||
-    !originalFilename ||
-    fileSize <= 0 ||
-    !allowedAssetTypes.includes(assetType)
-  ) {
+  if (!user || !storagePath || !originalFilename || fileSize <= 0) {
     redirect("/media?message=Arquivo%20nao%20enviado");
   }
 

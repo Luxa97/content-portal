@@ -11,21 +11,17 @@ function getFileName(filePath: string, originalFilename?: string | null) {
 
 export function DownloadFileButton({
   fileUrl,
-  originalFilename,
-  label = "Baixar arquivo"
+  originalFilename
 }: {
   fileUrl: string;
   originalFilename?: string | null;
-  label?: string;
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
 
   async function handleDownload() {
     setIsDownloading(true);
     setError("");
-    setMessage("");
 
     if (!fileUrl || fileUrl.startsWith("http")) {
       setError("Arquivo privado invalido para download.");
@@ -56,13 +52,7 @@ export function DownloadFileButton({
       return;
     }
 
-    const link = document.createElement("a");
-    link.href = data.signedUrl;
-    link.download = getFileName(fileUrl, originalFilename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setMessage("Download iniciado.");
+    window.location.href = data.signedUrl;
     setIsDownloading(false);
   }
 
@@ -76,9 +66,8 @@ export function DownloadFileButton({
         className="gap-2 px-3"
       >
         <Download size={15} />
-        {isDownloading ? "Gerando link..." : label}
+        {isDownloading ? "Preparando..." : "Baixar arquivo"}
       </Button>
-      {message ? <p className="text-xs text-green-700">{message}</p> : null}
       {error ? <p className="text-xs text-red-600">{error}</p> : null}
     </div>
   );

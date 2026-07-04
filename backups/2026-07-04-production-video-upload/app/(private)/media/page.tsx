@@ -18,11 +18,7 @@ function formatFileSize(size: number | null) {
   return `${megabytes.toFixed(1)} MB`;
 }
 
-export default async function MediaPage({
-  searchParams
-}: {
-  searchParams: { success?: string; message?: string };
-}) {
+export default async function MediaPage() {
   const supabase = await createClient();
 
   const { data: assets } = await supabase
@@ -38,18 +34,6 @@ export default async function MediaPage({
         title="Media Library"
         description="Videos, fotos e arquivos originais preservados sem perda de qualidade."
       />
-
-      {searchParams.success ? (
-        <div className="mb-6 rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
-          {searchParams.success}
-        </div>
-      ) : null}
-
-      {searchParams.message ? (
-        <div className="mb-6 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">
-          {searchParams.message}
-        </div>
-      ) : null}
 
       <div className="grid gap-6">
         <section>

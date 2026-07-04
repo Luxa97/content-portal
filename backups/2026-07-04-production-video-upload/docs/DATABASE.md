@@ -30,8 +30,8 @@ Campos:
 - `hook`: frase inicial ou promessa do conteudo.
 - `product_link`: link do produto.
 - `notes`: observacoes livres.
-- `file_url`: caminho privado do arquivo no Supabase Storage, mantido por compatibilidade do MVP.
-- `storage_path`: caminho privado principal do arquivo no Supabase Storage.
+- `file_url`: link opcional do arquivo.
+- `storage_path`: caminho futuro do arquivo no Supabase Storage.
 - `original_filename`: nome original do arquivo enviado.
 - `file_size`: tamanho do arquivo em bytes.
 - `mime_type`: tipo MIME informado pelo navegador.
@@ -161,9 +161,8 @@ videos/
     timestamp-nome-do-arquivo.mp4
 ```
 
-O valor salvo em `videos.storage_path`, `videos.file_url` ou
-`media_assets.storage_path` e o caminho privado do arquivo dentro do bucket `videos`.
-Para baixar, o app cria uma URL
+O valor salvo em `videos.file_url` ou `media_assets.storage_path` e o caminho
+privado do arquivo dentro do bucket `videos`. Para baixar, o app cria uma URL
 assinada temporaria usando a sessao autenticada do usuario.
 
 A Media Library lista registros da tabela `media_assets`.

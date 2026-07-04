@@ -121,7 +121,7 @@ Padrao recomendado:
 - Listagem de registros: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
-- Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho privado em `storage_path` e `file_url`.
+- Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho em `file_url`.
 - Download: `DownloadFileButton` cria uma URL assinada temporaria para baixar o arquivo original.
 - Media Library: `/media` salva arquivos em `media_assets` e reaproveita o download seguro.
 - Dados persistem na tabela `videos`.
@@ -135,7 +135,6 @@ Upload:
 3. O arquivo original e enviado ao bucket privado `videos`.
 4. O caminho privado e salvo em `videos.file_url` e `videos.storage_path`.
 5. Metadados sao salvos no registro: nome original, tamanho, MIME e data.
-6. A interface mostra feedback de envio, erro ou sucesso.
 
 Download:
 
@@ -143,7 +142,6 @@ Download:
 2. `DownloadFileButton` pede uma URL assinada temporaria ao Supabase.
 3. O navegador baixa o arquivo original usando a URL assinada.
 4. O arquivo nao e comprimido, convertido ou modificado.
-5. A interface informa quando o link esta sendo gerado e quando o download inicia.
 
 ## Media Tools Futuro
 

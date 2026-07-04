@@ -4,10 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-function isValidPrivateStoragePath(path: string, userId: string) {
-  return !path || (!path.startsWith("http") && path.startsWith(`${userId}/`));
-}
-
 export async function createVideo(formData: FormData) {
   const title = String(formData.get("title") ?? "");
   const niche = String(formData.get("niche") ?? "");
@@ -31,12 +27,6 @@ export async function createVideo(formData: FormData) {
 
   if (!user || !title || !niche || !platform) {
     return;
-  }
-
-  if (!isValidPrivateStoragePath(fileUrl, user.id)) {
-    redirect(
-      `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
-    );
   }
 
   const { error } = await supabase.from("videos").insert({
@@ -90,12 +80,6 @@ export async function updateVideo(formData: FormData) {
 
   if (!user || !id || !title || !niche || !platform) {
     return;
-  }
-
-  if (!isValidPrivateStoragePath(fileUrl, user.id)) {
-    redirect(
-      `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
-    );
   }
 
   const { error } = await supabase
