@@ -78,9 +78,7 @@ fonte principal do sistema.
 - Download do arquivo original por usuario autenticado.
 - Media Library inicial para enviar, listar e baixar videos, fotos e arquivos.
 - Comentarios internos por video.
-- Gerenciamento de contas reais por plataforma.
-- Historico manual de onde cada video foi publicado.
-- Metricas manuais por postagem.
+- Marcacao de plataformas onde o video foi publicado.
 - Pagina de hooks iniciais.
 - Pagina de referencias virais iniciais.
 
@@ -142,7 +140,7 @@ fonte principal do sistema.
 5. Define Nicho/Project, plataforma, status, responsavel e tipo.
 6. Adiciona hook, link do produto, observacoes e link do arquivo.
 7. Registra comentarios internos sem apagar historico.
-8. Marca onde o video foi publicado, escolhendo uma conta real.
+8. Marca onde o video foi publicado.
 9. Atualiza o status conforme a producao avanca.
 10. Consulta dashboard e lista para acompanhar o pipeline.
 

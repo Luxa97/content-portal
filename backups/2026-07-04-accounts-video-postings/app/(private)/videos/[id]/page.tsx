@@ -7,7 +7,7 @@ import { VideoComments } from "@/components/VideoComments";
 import { VideoPublications } from "@/components/VideoPublications";
 import { updateVideo } from "@/app/(private)/videos/actions";
 import { createClient } from "@/lib/supabase/server";
-import type { Account, Project, VideoComment, VideoPublication } from "@/lib/types";
+import type { Project, VideoComment, VideoPublication } from "@/lib/types";
 
 export default async function EditVideoPage({
   params
@@ -21,15 +21,9 @@ export default async function EditVideoPage({
     .select("*")
     .order("created_at", { ascending: true });
 
-  const { data: accounts } = await supabase
-    .from("accounts")
-    .select("*, projects(*)")
-    .order("platform", { ascending: true })
-    .order("name", { ascending: true });
-
   const { data: video } = await supabase
     .from("videos")
-    .select("*, video_comments(*), video_publications(*, accounts(*))")
+    .select("*, video_comments(*), video_publications(*)")
     .eq("id", params.id)
     .single();
 
@@ -62,7 +56,6 @@ export default async function EditVideoPage({
 
         <VideoPublications
           videoId={video.id}
-          accounts={(accounts ?? []) as Account[]}
           publications={
             ((video.video_publications ?? []) as VideoPublication[])
           }

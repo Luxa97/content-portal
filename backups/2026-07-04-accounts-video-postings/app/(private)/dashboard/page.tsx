@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { createClient } from "@/lib/supabase/server";
-import { platforms, responsibles, statuses } from "@/lib/constants";
+import { responsibles, statuses } from "@/lib/constants";
 
 function getProjectName(video: { projects?: { name: string }[] | { name: string } | null; niche: string }) {
   if (Array.isArray(video.projects)) {
@@ -22,18 +22,10 @@ export default async function DashboardPage() {
 
   const { data: videos } = await supabase
     .from("videos")
-    .select("id,title,niche,platform,status,responsible,created_at,project_id,projects(name),video_publications(status)")
+    .select("id,title,niche,platform,status,responsible,created_at,project_id,projects(name)")
     .order("created_at", { ascending: false });
 
-  const { data: accounts } = await supabase.from("accounts").select("id,platform");
-
-  const { data: publications } = await supabase
-    .from("video_publications")
-    .select("id,status,accounts(platform)");
-
   const videoList = videos ?? [];
-  const accountList = accounts ?? [];
-  const publicationList = publications ?? [];
   const projectList = projects ?? [];
   const recentVideos = videoList.slice(0, 5);
 
@@ -48,26 +40,6 @@ export default async function DashboardPage() {
   const countByResponsible = (responsible: string) => {
     return videoList.filter((video) => video.responsible === responsible).length;
   };
-
-  const publicationCountByPlatform = (platform: string) => {
-    return publicationList.filter((publication) => {
-      const account = Array.isArray(publication.accounts)
-        ? publication.accounts[0]
-        : publication.accounts;
-
-      return account?.platform === platform;
-    }).length;
-  };
-
-  const viralCount = publicationList.filter(
-    (publication) => publication.status === "Viralizou"
-  ).length;
-  const blockedCount = publicationList.filter(
-    (publication) => publication.status === "Bloqueado"
-  ).length;
-  const pendingVideos = videoList.filter(
-    (video) => !video.video_publications?.length
-  ).length;
 
   return (
     <>
@@ -89,54 +61,6 @@ export default async function DashboardPage() {
       <section className="rounded-md border border-line bg-white p-5">
         <p className="text-sm text-gray-500">Total de videos cadastrados</p>
         <strong className="mt-2 block text-4xl text-ink">{videoList.length}</strong>
-      </section>
-
-      <section className="mt-6">
-        <h2 className="mb-3 font-semibold text-ink">Postagens</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="rounded-md border border-line bg-white p-5">
-            <p className="text-sm text-gray-500">Total de contas</p>
-            <strong className="mt-2 block text-3xl text-ink">
-              {accountList.length}
-            </strong>
-          </div>
-          <div className="rounded-md border border-line bg-white p-5">
-            <p className="text-sm text-gray-500">Total de postagens</p>
-            <strong className="mt-2 block text-3xl text-ink">
-              {publicationList.length}
-            </strong>
-          </div>
-          <div className="rounded-md border border-line bg-white p-5">
-            <p className="text-sm text-gray-500">Viralizados</p>
-            <strong className="mt-2 block text-3xl text-ink">{viralCount}</strong>
-          </div>
-          <div className="rounded-md border border-line bg-white p-5">
-            <p className="text-sm text-gray-500">Bloqueados</p>
-            <strong className="mt-2 block text-3xl text-ink">
-              {blockedCount}
-            </strong>
-          </div>
-          <div className="rounded-md border border-line bg-white p-5">
-            <p className="text-sm text-gray-500">Pendentes</p>
-            <strong className="mt-2 block text-3xl text-ink">
-              {pendingVideos}
-            </strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-6">
-        <h2 className="mb-3 font-semibold text-ink">Postagens por plataforma</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {platforms.map((platform) => (
-            <div key={platform} className="rounded-md border border-line bg-white p-5">
-              <p className="text-sm text-gray-500">{platform}</p>
-              <strong className="mt-2 block text-3xl text-ink">
-                {publicationCountByPlatform(platform)}
-              </strong>
-            </div>
-          ))}
-        </div>
       </section>
 
       <section className="mt-6">

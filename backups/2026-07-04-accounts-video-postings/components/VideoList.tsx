@@ -74,14 +74,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
               </span>
               <p className="text-sm text-gray-700">
                 {publications.length
-                  ? publications
-                      .map(
-                        (publication) =>
-                          `${publication.accounts?.platform ?? "Conta"} @${
-                            publication.accounts?.username ?? "-"
-                          }`
-                      )
-                      .join(", ")
+                  ? publications.map((publication) => publication.platform).join(", ")
                   : "-"}
               </p>
               <div className="grid gap-1">

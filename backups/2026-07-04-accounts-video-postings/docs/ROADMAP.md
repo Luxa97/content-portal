@@ -34,8 +34,6 @@ Status usados:
 - Concluido: Upload e download de fotos e arquivos originais.
 - Concluido: Comentarios internos por video.
 - Concluido: Marcacao de plataformas publicadas por video.
-- Concluido: Contas reais por plataforma.
-- Concluido: Historico manual de postagens por conta.
 - Concluido: Pagina de hooks.
 - Concluido: Pagina de referencias virais.
 
@@ -45,7 +43,7 @@ Status usados:
 - Concluido: Upload real de video no Supabase Storage.
 - Concluido: Listagem inicial de arquivos enviados.
 - Em andamento: Melhorar documentacao e memoria do projeto.
-- Concluido: Criar filtros na pagina de videos.
+- Planejado: Criar filtros na pagina de videos.
 - Planejado: Criar busca por titulo, hook e nicho.
 - Planejado: Criar biblioteca editavel de hooks.
 - Planejado: Criar biblioteca editavel de referencias virais.
@@ -77,7 +75,7 @@ IA nao deve ser adicionada antes da base operacional estar estavel.
 - Planejado: Medir quantidade de videos por responsavel.
 - Planejado: Medir quantidade de videos por tipo.
 - Planejado: Registrar data de postagem.
-- Concluido: Registrar metricas manuais por postagem.
+- Planejado: Registrar metricas manuais por plataforma.
 - Planejado: Criar dashboard de performance.
 
 ## Automacoes

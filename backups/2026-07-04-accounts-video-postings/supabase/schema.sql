@@ -35,19 +35,6 @@ create table public.videos (
   created_at timestamptz not null default now()
 );
 
-create table public.accounts (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
-  project_id uuid references public.projects(id) on delete set null,
-  platform text not null check (platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
-  name text not null,
-  username text not null,
-  status text not null default 'ativa' check (status in ('ativa', 'inativa')),
-  notes text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
 create table public.video_comments (
   id uuid primary key default gen_random_uuid(),
   video_id uuid not null references public.videos(id) on delete cascade,
@@ -61,18 +48,10 @@ create table public.video_publications (
   id uuid primary key default gen_random_uuid(),
   video_id uuid not null references public.videos(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
-  account_id uuid not null references public.accounts(id) on delete cascade,
-  status text not null default 'Não postado' check (status in ('Não postado', 'Agendado', 'Publicado', 'Viralizou', 'Bom engajamento', 'Médio engajamento', 'Baixo desempenho', 'Bloqueado', 'Removido', 'Em análise', 'Repostar', 'Arquivado')),
-  posted_at timestamptz,
-  post_url text,
-  views integer,
-  likes integer,
-  comments_count integer,
-  shares integer,
-  notes text,
+  platform text not null check (platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
+  published_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (video_id, account_id)
+  unique (video_id, platform)
 );
 
 create table public.video_statuses (
@@ -95,7 +74,6 @@ create table public.media_assets (
 );
 
 alter table public.projects enable row level security;
-alter table public.accounts enable row level security;
 alter table public.videos enable row level security;
 alter table public.video_comments enable row level security;
 alter table public.video_publications enable row level security;
@@ -117,19 +95,6 @@ with check (auth.uid() = user_id);
 create policy "Users can delete own projects"
 on public.projects for delete
 using (auth.uid() = user_id);
-
-create policy "Users can read own accounts"
-on public.accounts for select
-using (auth.uid() = user_id);
-
-create policy "Users can create own accounts"
-on public.accounts for insert
-with check (auth.uid() = user_id);
-
-create policy "Users can update own accounts"
-on public.accounts for update
-using (auth.uid() = user_id)
-with check (auth.uid() = user_id);
 
 create policy "Users can read own videos"
 on public.videos for select
@@ -194,26 +159,6 @@ with check (
   )
 );
 
-create policy "Users can update own video publications"
-on public.video_publications for update
-using (
-  exists (
-    select 1
-    from public.videos
-    where videos.id = video_publications.video_id
-      and videos.user_id = auth.uid()
-  )
-)
-with check (
-  auth.uid() = user_id
-  and exists (
-    select 1
-    from public.videos
-    where videos.id = video_publications.video_id
-      and videos.user_id = auth.uid()
-  )
-);
-
 create policy "Users can delete own video publications"
 on public.video_publications for delete
 using (
@@ -235,14 +180,6 @@ values
   ('Bloqueado', 6),
   ('Reprovado', 7),
   ('Arquivado', 8);
-
-create index accounts_user_id_idx on public.accounts(user_id);
-create index accounts_project_id_idx on public.accounts(project_id);
-create index accounts_platform_idx on public.accounts(platform);
-create index accounts_status_idx on public.accounts(status);
-create index video_publications_account_id_idx on public.video_publications(account_id);
-create index video_publications_video_id_idx on public.video_publications(video_id);
-create index video_publications_status_idx on public.video_publications(status);
 
 create policy "Users can read own media assets"
 on public.media_assets for select

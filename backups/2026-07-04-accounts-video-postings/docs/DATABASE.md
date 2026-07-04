@@ -41,23 +41,6 @@ Campos:
 - `description`: descricao opcional.
 - `created_at`: data de criacao.
 
-### `public.accounts`
-
-Conta real em uma plataforma.
-
-Campos:
-
-- `id`: identificador unico.
-- `user_id`: usuario dono da conta.
-- `project_id`: Project/Nicho opcional ligado a conta.
-- `platform`: TikTok, Instagram, YouTube, Facebook, Shopee, Amazon ou Outro.
-- `name`: nome interno da conta.
-- `username`: usuario da conta.
-- `status`: `ativa` ou `inativa`.
-- `notes`: observacoes opcionais.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
 ### `public.videos`
 
 Tabela principal dos videos planejados ou produzidos.
@@ -112,40 +95,26 @@ Comentarios antigos nao sao apagados automaticamente.
 
 ### `public.video_publications`
 
-Registra onde o video foi publicado. Na interface, aparece como "Publicado em",
-"Onde este video foi publicado" ou "Historico de postagens".
+Registra onde o video foi publicado.
 
 Campos:
 
 - `id`: identificador unico.
 - `video_id`: video relacionado.
-- `user_id`: usuario dono do registro.
-- `account_id`: conta onde o video foi publicado.
-- `status`: status daquela postagem.
-- `posted_at`: data e hora opcional da postagem.
-- `post_url`: link opcional do post.
-- `views`: visualizacoes opcionais.
-- `likes`: curtidas opcionais.
-- `comments_count`: comentarios opcionais.
-- `shares`: compartilhamentos opcionais.
-- `notes`: observacoes opcionais.
+- `user_id`: usuario que marcou a publicacao.
+- `platform`: plataforma.
+- `published_at`: data e hora da marcacao.
 - `created_at`: data de criacao do registro.
-- `updated_at`: data da ultima atualizacao.
 
-Status de postagem:
+Plataformas atuais:
 
-- Nao postado
-- Agendado
-- Publicado
-- Viralizou
-- Bom engajamento
-- Medio engajamento
-- Baixo desempenho
-- Bloqueado
-- Removido
-- Em analise
-- Repostar
-- Arquivado
+- TikTok
+- Instagram
+- Facebook
+- YouTube
+- Shopee
+- Amazon
+- Outro
 
 ### `public.video_statuses`
 
@@ -160,15 +129,12 @@ pela pagina `/media`.
 ## Relacionamentos
 
 - `projects.user_id` referencia `auth.users.id`.
-- `accounts.user_id` referencia `auth.users.id`.
-- `accounts.project_id` referencia `projects.id`.
 - `videos.user_id` referencia `auth.users.id`.
 - `videos.project_id` referencia `projects.id`.
 - `video_comments.video_id` referencia `videos.id`.
 - `video_comments.user_id` referencia `auth.users.id`.
 - `video_publications.video_id` referencia `videos.id`.
 - `video_publications.user_id` referencia `auth.users.id`.
-- `video_publications.account_id` referencia `accounts.id`.
 - `media_assets.user_id` referencia `auth.users.id`.
 
 ## RLS
@@ -176,7 +142,6 @@ pela pagina `/media`.
 RLS esta habilitado em:
 
 - `public.projects`
-- `public.accounts`
 - `public.videos`
 - `public.video_comments`
 - `public.video_publications`
@@ -185,7 +150,6 @@ RLS esta habilitado em:
 Regras principais:
 
 - Usuario so acessa seus proprios Projects.
-- Usuario so acessa suas proprias contas.
 - Usuario so acessa seus proprios videos.
 - Usuario so acessa comentarios e publicacoes dos seus proprios videos.
 - Usuario so acessa seus proprios assets da Media Library.
@@ -211,22 +175,6 @@ Arquivos atuais:
 - `supabase/video-metadata-migration.sql`: metadados do arquivo original.
 - `supabase/media-assets-migration.sql`: tabela `media_assets`.
 - `supabase/projects-video-workflow-migration.sql`: Projects, vinculo video -> Project, novos status, comentarios e publicacoes.
-- `supabase/accounts-video-publications-migration.sql`: contas reais e historico manual de postagens por conta.
-
-## Modelo De Postagens
-
-Video = arquivo/conteudo mestre.
-
-Account = conta real em uma plataforma.
-
-VideoPublication = registro tecnico de onde aquele video foi postado. Na
-interface, este conceito aparece como "Publicado em".
-
-Exemplo:
-
-- TikTok @conta1: Viralizou.
-- TikTok @conta2: Bloqueado.
-- Instagram @conta3: Bom engajamento.
 
 ## Boas Praticas
 

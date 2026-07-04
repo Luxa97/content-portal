@@ -8,11 +8,6 @@ function isValidPrivateStoragePath(path: string, userId: string) {
   return !path || (!path.startsWith("http") && path.startsWith(`${userId}/`));
 }
 
-function optionalNumber(value: FormDataEntryValue | null) {
-  const numberValue = Number(value ?? "");
-  return Number.isFinite(numberValue) && numberValue >= 0 ? numberValue : null;
-}
-
 async function getUser() {
   const supabase = await createClient();
   const {
@@ -312,198 +307,43 @@ export async function addVideoComment(formData: FormData) {
   return { error: null };
 }
 
-export async function createAccount(formData: FormData) {
-  const projectId = String(formData.get("project_id") ?? "");
-  const platform = String(formData.get("platform") ?? "");
-  const name = String(formData.get("name") ?? "").trim();
-  const username = String(formData.get("username") ?? "").trim();
-  const status = String(formData.get("status") ?? "ativa");
-  const notes = String(formData.get("notes") ?? "").trim();
-  const { supabase, user } = await getUser();
-
-  if (!user || !platform || !name || !username) {
-    return { error: "Preencha plataforma, nome e usuario da conta." };
-  }
-
-  const { error } = await supabase.from("accounts").insert({
-    user_id: user.id,
-    project_id: projectId || null,
-    platform,
-    name,
-    username,
-    status,
-    notes: notes || null,
-    updated_at: new Date().toISOString()
-  });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  revalidatePath("/dashboard");
-  revalidatePath("/videos");
-  return { error: null };
-}
-
-export async function updateAccount(formData: FormData) {
-  const id = String(formData.get("id") ?? "");
-  const projectId = String(formData.get("project_id") ?? "");
-  const platform = String(formData.get("platform") ?? "");
-  const name = String(formData.get("name") ?? "").trim();
-  const username = String(formData.get("username") ?? "").trim();
-  const status = String(formData.get("status") ?? "ativa");
-  const notes = String(formData.get("notes") ?? "").trim();
-  const { supabase, user } = await getUser();
-
-  if (!user || !id || !platform || !name || !username) {
-    return { error: "Conta invalida." };
-  }
-
-  const { error } = await supabase
-    .from("accounts")
-    .update({
-      project_id: projectId || null,
-      platform,
-      name,
-      username,
-      status,
-      notes: notes || null,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  revalidatePath("/dashboard");
-  revalidatePath("/videos");
-  return { error: null };
-}
-
-export async function archiveAccount(id: string) {
-  const { supabase, user } = await getUser();
-
-  if (!user || !id) {
-    return { error: "Conta nao encontrada." };
-  }
-
-  const { error } = await supabase
-    .from("accounts")
-    .update({ status: "inativa", updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  revalidatePath("/dashboard");
-  revalidatePath("/videos");
-  return { error: null };
-}
-
-export async function createVideoPublication(formData: FormData) {
+export async function setVideoPublication(formData: FormData) {
   const videoId = String(formData.get("video_id") ?? "");
-  const accountId = String(formData.get("account_id") ?? "");
-  const status = String(formData.get("status") ?? "Não postado");
-  const postedAt = String(formData.get("posted_at") ?? "");
-  const postUrl = String(formData.get("post_url") ?? "").trim();
-  const notes = String(formData.get("notes") ?? "").trim();
+  const platform = String(formData.get("platform") ?? "");
+  const checked = String(formData.get("checked") ?? "") === "true";
   const { supabase, user } = await getUser();
 
-  if (!user || !videoId || !accountId) {
-    return { error: "Selecione uma conta." };
+  if (!user || !videoId || !platform) {
+    return { error: "Publicacao invalida." };
   }
 
-  const { error } = await supabase.from("video_publications").insert({
-    video_id: videoId,
-    account_id: accountId,
-    user_id: user.id,
-    status,
-    posted_at: postedAt || null,
-    post_url: postUrl || null,
-    views: optionalNumber(formData.get("views")),
-    likes: optionalNumber(formData.get("likes")),
-    comments_count: optionalNumber(formData.get("comments_count")),
-    shares: optionalNumber(formData.get("shares")),
-    notes: notes || null,
-    updated_at: new Date().toISOString()
-  });
+  if (checked) {
+    const { error } = await supabase.from("video_publications").upsert(
+      {
+        video_id: videoId,
+        user_id: user.id,
+        platform,
+        published_at: new Date().toISOString()
+      },
+      { onConflict: "video_id,platform" }
+    );
 
-  if (error) {
-    return { error: error.message };
+    if (error) {
+      return { error: error.message };
+    }
+  } else {
+    const { error } = await supabase
+      .from("video_publications")
+      .delete()
+      .eq("video_id", videoId)
+      .eq("platform", platform);
+
+    if (error) {
+      return { error: error.message };
+    }
   }
 
   revalidatePath(`/videos/${videoId}`);
   revalidatePath("/videos");
-  revalidatePath("/dashboard");
-  return { error: null };
-}
-
-export async function updateVideoPublication(formData: FormData) {
-  const id = String(formData.get("id") ?? "");
-  const videoId = String(formData.get("video_id") ?? "");
-  const accountId = String(formData.get("account_id") ?? "");
-  const status = String(formData.get("status") ?? "Não postado");
-  const postedAt = String(formData.get("posted_at") ?? "");
-  const postUrl = String(formData.get("post_url") ?? "").trim();
-  const notes = String(formData.get("notes") ?? "").trim();
-  const { supabase, user } = await getUser();
-
-  if (!user || !id || !videoId || !accountId) {
-    return { error: "Registro invalido." };
-  }
-
-  const { error } = await supabase
-    .from("video_publications")
-    .update({
-      account_id: accountId,
-      status,
-      posted_at: postedAt || null,
-      post_url: postUrl || null,
-      views: optionalNumber(formData.get("views")),
-      likes: optionalNumber(formData.get("likes")),
-      comments_count: optionalNumber(formData.get("comments_count")),
-      shares: optionalNumber(formData.get("shares")),
-      notes: notes || null,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id)
-    .eq("video_id", videoId)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  revalidatePath(`/videos/${videoId}`);
-  revalidatePath("/videos");
-  revalidatePath("/dashboard");
-  return { error: null };
-}
-
-export async function deleteVideoPublication(id: string, videoId: string) {
-  const { supabase, user } = await getUser();
-
-  if (!user || !id || !videoId) {
-    return { error: "Registro nao encontrado." };
-  }
-
-  const { error } = await supabase
-    .from("video_publications")
-    .delete()
-    .eq("id", id)
-    .eq("video_id", videoId)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  revalidatePath(`/videos/${videoId}`);
-  revalidatePath("/videos");
-  revalidatePath("/dashboard");
   return { error: null };
 }

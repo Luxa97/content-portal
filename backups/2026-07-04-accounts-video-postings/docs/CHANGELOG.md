@@ -2,16 +2,6 @@
 
 Historico relevante do Content Portal, organizado por data e versao.
 
-## 2026-07-04 - v0.6.0 - Contas e historico de postagens
-
-- Criada entidade `accounts` para contas reais por plataforma.
-- Evoluida `video_publications` para representar onde cada video foi postado.
-- A interface usa termos simples como "Publicado em" e "Historico de postagens".
-- Adicionados status, link, metricas e observacoes por postagem manual.
-- Adicionados filtros por nicho, plataforma, conta, status, bloqueados, viralizados e nao publicados.
-- Dashboard passou a mostrar contas, postagens, viralizados, bloqueados e pendentes.
-- Criada migration `supabase/accounts-video-publications-migration.sql`.
-
 ## 2026-07-04 - v0.5.0 - Projects, comentarios e publicacoes
 
 - Substituidos nichos fixos por Projects criados pelo usuario.

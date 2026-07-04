@@ -44,9 +44,8 @@ Arquivos principais:
 - `VideoForm.tsx`: formulario de criacao e edicao de videos.
 - `VideoList.tsx`: lista de videos.
 - `ProjectManager.tsx`: cria, edita e exclui Nichos/Projects.
-- `AccountManager.tsx`: cria, edita, lista e inativa contas por plataforma.
 - `VideoComments.tsx`: comentarios internos por video.
-- `VideoPublications.tsx`: historico manual de onde o video foi publicado.
+- `VideoPublications.tsx`: plataformas onde o video foi publicado.
 - `DeleteVideoButton.tsx`: exclusao com confirmacao no navegador.
 - `DownloadFileButton.tsx`: gera link temporario para baixar o arquivo original.
 - `MediaUploadForm.tsx`: formulario de upload da Media Library.
@@ -124,12 +123,11 @@ Padrao recomendado:
 - Nichos na interface sao Projects no banco e no codigo.
 - Media Library: `/media` e responsavel por videos, fotos e arquivos originais.
 - Projects: `/videos` mostra `ProjectManager` para criar, editar e excluir Nichos.
-- Contas: `/videos` mostra `AccountManager` para gerenciar contas reais.
 - Criacao de registro: `/videos` usa `VideoForm` com `createVideo`.
 - Listagem de registros: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
 - Comentarios: `/videos/[id]` usa `VideoComments`.
-- Publicado em: `/videos/[id]` usa `VideoPublications` para registrar conta, status, link, metricas e observacoes.
+- Publicacoes: `/videos/[id]` usa `VideoPublications`.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
 - Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho privado em `storage_path` e `file_url`.
 - Download: `DownloadFileButton` cria uma URL assinada temporaria para baixar o arquivo original.
@@ -152,9 +150,8 @@ Padrao recomendado:
 2. Pode adicionar comentarios internos ao video.
 3. Cada comentario guarda texto, data, hora e usuario quando disponivel.
 4. Comentarios antigos continuam no historico.
-5. Em "Publicado em", o usuario adiciona uma postagem manual.
-6. Cada postagem seleciona uma conta real cadastrada.
-7. Cada postagem pode ter status, data, link, metricas e observacoes.
+5. Em "Publicado em", o usuario marca TikTok, Instagram, Facebook, YouTube, Shopee, Amazon ou Outro.
+6. Ao marcar uma plataforma, o sistema registra data e hora.
 
 ## Fluxo De Upload E Download
 

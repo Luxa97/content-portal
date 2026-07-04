@@ -8,20 +8,6 @@ export type Project = {
   created_at: string;
 };
 
-export type Account = {
-  id: string;
-  user_id: string;
-  project_id: string | null;
-  platform: string;
-  name: string;
-  username: string;
-  status: "ativa" | "inativa";
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-  projects?: Project | null;
-};
-
 export type Video = {
   id: string;
   user_id: string;
@@ -60,18 +46,9 @@ export type VideoPublication = {
   id: string;
   video_id: string;
   user_id: string;
-  account_id: string;
-  status: string;
-  posted_at: string | null;
-  post_url: string | null;
-  views: number | null;
-  likes: number | null;
-  comments_count: number | null;
-  shares: number | null;
-  notes: string | null;
+  platform: string;
+  published_at: string;
   created_at: string;
-  updated_at: string;
-  accounts?: Account | null;
 };
 
 export type MediaAsset = {
