@@ -20,8 +20,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Registrado que processamento pesado de video deve acontecer fora da Vercel.
 - Melhorada validacao e documentacao de responsabilidades entre `/videos` e `/media`.
 - Adicionados metadados de upload do arquivo original.
-- Criada tabela `media_assets` para videos, fotos e arquivos enviados pela Media Library.
-- Renomeado o componente de download para `DownloadFileButton`.
 
 ## 2026-07-02 - v0.3.1 - Upload e download de videos
 

@@ -44,8 +44,7 @@ Arquivos principais:
 - `VideoForm.tsx`: formulario de criacao e edicao de videos.
 - `VideoList.tsx`: lista de videos.
 - `DeleteVideoButton.tsx`: exclusao com confirmacao no navegador.
-- `DownloadFileButton.tsx`: gera link temporario para baixar o arquivo original.
-- `MediaUploadForm.tsx`: formulario de upload da Media Library.
+- `DownloadVideoButton.tsx`: gera link temporario para baixar o video original.
 
 ### `lib/`
 
@@ -69,7 +68,6 @@ Arquivos principais:
 - `videos-crud-migration.sql`: migration do CRUD de videos.
 - `video-classification-migration.sql`: migration de responsavel e tipo de video.
 - `video-storage-migration.sql`: migration do bucket privado de videos.
-- `media-assets-migration.sql`: migration da tabela `media_assets`.
 
 Novas migrations devem ser criadas nesta pasta e documentadas em
 `docs/DATABASE.md`.
@@ -116,22 +114,22 @@ Padrao recomendado:
 ## Fluxo De Videos E Media
 
 - Videos: `/videos` e responsavel pelos registros de conteudo.
-- Media Library: `/media` e responsavel por videos, fotos e arquivos originais.
+- Media Library: `/media` e responsavel pelos arquivos vinculados aos videos.
 - Criacao de registro: `/videos` usa `VideoForm` com `createVideo`.
 - Listagem de registros: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
 - Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho em `file_url`.
-- Download: `DownloadFileButton` cria uma URL assinada temporaria para baixar o arquivo original.
-- Media Library: `/media` salva arquivos em `media_assets` e reaproveita o download seguro.
+- Download: `DownloadVideoButton` cria uma URL assinada temporaria para baixar o arquivo original.
+- Media Library: `/media` lista videos que possuem `file_url` e reaproveita o download seguro.
 - Dados persistem na tabela `videos`.
 
 ## Fluxo De Upload E Download
 
 Upload:
 
-1. Usuario autenticado seleciona um arquivo em `VideoForm` ou `MediaUploadForm`.
-2. O app valida extensao e tipo permitido.
+1. Usuario autenticado seleciona um arquivo em `VideoForm`.
+2. O app valida extensao e tipo permitido: mp4, mov, m4v ou webm.
 3. O arquivo original e enviado ao bucket privado `videos`.
 4. O caminho privado e salvo em `videos.file_url` e `videos.storage_path`.
 5. Metadados sao salvos no registro: nome original, tamanho, MIME e data.
@@ -139,7 +137,7 @@ Upload:
 Download:
 
 1. Usuario autenticado clica em `Baixar video`.
-2. `DownloadFileButton` pede uma URL assinada temporaria ao Supabase.
+2. `DownloadVideoButton` pede uma URL assinada temporaria ao Supabase.
 3. O navegador baixa o arquivo original usando a URL assinada.
 4. O arquivo nao e comprimido, convertido ou modificado.
 

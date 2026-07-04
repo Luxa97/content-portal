@@ -3,7 +3,7 @@
 import { Save } from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
 import { Button } from "@/components/Button";
-import { DownloadVideoButton } from "@/components/DownloadVideoButton";
+import { DownloadFileButton } from "@/components/DownloadFileButton";
 import {
   niches,
   platforms,
@@ -298,7 +298,7 @@ export function VideoForm({
         ) : null}
         {fileUrl ? (
           <div className="mt-3">
-            <DownloadVideoButton
+            <DownloadFileButton
               fileUrl={fileUrl}
               originalFilename={originalFilename}
             />

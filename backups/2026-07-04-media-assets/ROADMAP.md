@@ -30,7 +30,6 @@ Status usados:
 - Concluido: Classificacao por tipo de video.
 - Concluido: Upload e download de video original sem compressao.
 - Concluido: Media Library inicial em `/media`.
-- Concluido: Upload e download de fotos e arquivos originais.
 - Concluido: Pagina de hooks.
 - Concluido: Pagina de referencias virais.
 

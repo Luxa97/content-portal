@@ -87,31 +87,11 @@ Campos:
 Observacao: a interface atual de CRUD de videos nao usa comentarios como foco
 principal, mas a tabela existe no schema.
 
-### `public.media_assets`
-
-Tabela da Media Library. Armazena videos, fotos e arquivos enviados diretamente
-pela pagina `/media`.
-
-Campos:
-
-- `id`: identificador unico do asset.
-- `user_id`: usuario dono do arquivo.
-- `title`: nome exibido na biblioteca.
-- `asset_type`: tipo geral do arquivo: `video`, `image` ou `file`.
-- `storage_bucket`: bucket onde o arquivo foi salvo.
-- `storage_path`: caminho privado do arquivo no Storage.
-- `original_filename`: nome original do arquivo.
-- `file_size`: tamanho do arquivo em bytes.
-- `mime_type`: tipo MIME informado pelo navegador.
-- `uploaded_at`: data de upload.
-- `created_at`: data de criacao do registro.
-
 ## Relacionamentos
 
 - `videos.user_id` referencia `auth.users.id`.
 - `video_comments.video_id` referencia `videos.id`.
 - `video_comments.user_id` referencia `auth.users.id`.
-- `media_assets.user_id` referencia `auth.users.id`.
 
 ## RLS
 
@@ -119,7 +99,6 @@ RLS esta habilitado em:
 
 - `public.videos`
 - `public.video_comments`
-- `public.media_assets`
 
 Politicas atuais de `videos`:
 
@@ -133,13 +112,6 @@ Politicas atuais de `video_comments`:
 - Usuario pode ler comentarios de seus proprios videos.
 - Usuario pode criar comentarios em seus proprios videos.
 
-Politicas atuais de `media_assets`:
-
-- Usuario pode ler seus proprios assets.
-- Usuario pode criar assets para si mesmo.
-- Usuario pode atualizar seus proprios assets.
-- Usuario pode excluir seus proprios assets.
-
 ## Storage
 
 O schema cria um bucket privado chamado `videos`.
@@ -150,7 +122,7 @@ Politicas atuais:
 - Usuario pode ler arquivos da sua propria pasta.
 - Usuario pode excluir arquivos da sua propria pasta.
 
-Os arquivos originais sao salvos sem compressao, conversao ou reducao de
+Os arquivos de video sao salvos sem compressao, conversao ou reducao de
 qualidade. O Supabase Storage preserva o arquivo original enviado pelo usuario.
 
 Organizacao dos arquivos:
@@ -161,11 +133,12 @@ videos/
     timestamp-nome-do-arquivo.mp4
 ```
 
-O valor salvo em `videos.file_url` ou `media_assets.storage_path` e o caminho
-privado do arquivo dentro do bucket `videos`. Para baixar, o app cria uma URL
-assinada temporaria usando a sessao autenticada do usuario.
+O valor salvo em `videos.file_url` e o caminho privado do arquivo dentro do
+bucket `videos`. Para baixar, o app cria uma URL assinada temporaria usando a
+sessao autenticada do usuario.
 
-A Media Library lista registros da tabela `media_assets`.
+A Media Library inicial lista registros da tabela `videos` que possuem
+`file_url`. Ainda nao existe uma tabela separada de assets de midia.
 
 Metadados salvos por upload:
 
@@ -174,7 +147,7 @@ Metadados salvos por upload:
 - Tipo MIME.
 - Caminho no Storage.
 - Data de upload.
-- Dono do registro por `videos.user_id` ou `media_assets.user_id`.
+- Dono do registro por `videos.user_id`.
 
 ## Migrations
 
@@ -185,20 +158,20 @@ Arquivos atuais:
 - `supabase/video-classification-migration.sql`: adiciona `responsible` e `video_type`.
 - `supabase/video-storage-migration.sql`: garante bucket privado `videos` e politicas de upload/download.
 - `supabase/video-metadata-migration.sql`: adiciona metadados do arquivo original.
-- `supabase/media-assets-migration.sql`: cria a tabela `media_assets`.
 
 ## Media Library
 
 Versao atual:
 
-- Usa a tabela `media_assets`.
-- Lista videos, fotos e arquivos enviados em `/media`.
+- Usa a tabela `videos`.
+- Lista apenas videos com `file_url`.
 - Usa o bucket privado `videos`.
 - Baixa arquivos por URL assinada temporaria.
 - Mostra nome original, tamanho e data de upload quando esses dados existem.
 
 Possivel evolucao futura:
 
+- Criar tabela `media_assets`.
 - Relacionar multiplos arquivos a um video.
 - Registrar metadados como tamanho, duracao, codec e formato.
 - Registrar thumbnails geradas em processamento externo.

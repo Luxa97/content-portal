@@ -1,8 +1,9 @@
-import Link from "next/link";
-import { DownloadVideoButton } from "@/components/DownloadVideoButton";
+import { DownloadFileButton } from "@/components/DownloadFileButton";
 import { EmptyState } from "@/components/EmptyState";
+import { MediaUploadForm } from "@/components/MediaUploadForm";
 import { PageHeader } from "@/components/PageHeader";
 import { createClient } from "@/lib/supabase/server";
+import type { MediaAsset } from "@/lib/types";
 
 function getFileName(fileUrl: string) {
   return fileUrl.split("/").pop() ?? fileUrl;
@@ -20,70 +21,70 @@ function formatFileSize(size: number | null) {
 export default async function MediaPage() {
   const supabase = await createClient();
 
-  const { data: videos } = await supabase
-    .from("videos")
-    .select("id,title,niche,platform,file_url,original_filename,file_size,mime_type,uploaded_at,created_at")
-    .not("file_url", "is", null)
-    .neq("file_url", "")
+  const { data: assets } = await supabase
+    .from("media_assets")
+    .select("*")
     .order("created_at", { ascending: false });
 
-  const mediaItems = videos ?? [];
+  const mediaItems = (assets ?? []) as MediaAsset[];
 
   return (
     <>
       <PageHeader
         title="Media Library"
-        description="Arquivos originais vinculados aos videos cadastrados."
+        description="Videos, fotos e arquivos originais preservados sem perda de qualidade."
       />
 
-      {mediaItems.length ? (
-        <div className="overflow-hidden rounded-md border border-line bg-white">
-          <div className="hidden grid-cols-[1fr_130px_100px_1fr_100px_130px_150px] gap-3 border-b border-line bg-mist px-5 py-3 text-xs font-semibold uppercase text-gray-500 xl:grid">
-            <span>Video</span>
-            <span>Nicho</span>
-            <span>Plataforma</span>
-            <span>Arquivo</span>
-            <span>Tamanho</span>
-            <span>Upload</span>
-            <span>Download</span>
-          </div>
+      <div className="grid gap-6">
+        <section>
+          <h2 className="mb-3 font-semibold text-ink">Novo arquivo</h2>
+          <MediaUploadForm />
+        </section>
 
-          <div className="divide-y divide-line">
-            {mediaItems.map((video) => (
-              <article
-                key={video.id}
-                className="grid gap-3 px-5 py-4 xl:grid-cols-[1fr_130px_100px_1fr_100px_130px_150px] xl:items-center"
-              >
-                <Link
-                  href={`/videos/${video.id}`}
-                  className="font-medium text-ink underline-offset-2 hover:underline"
+        {mediaItems.length ? (
+          <div className="overflow-hidden rounded-md border border-line bg-white">
+            <div className="hidden grid-cols-[1fr_100px_1fr_100px_130px_150px] gap-3 border-b border-line bg-mist px-5 py-3 text-xs font-semibold uppercase text-gray-500 xl:grid">
+              <span>Nome</span>
+              <span>Tipo</span>
+              <span>Arquivo</span>
+              <span>Tamanho</span>
+              <span>Upload</span>
+              <span>Download</span>
+            </div>
+
+            <div className="divide-y divide-line">
+              {mediaItems.map((asset) => (
+                <article
+                  key={asset.id}
+                  className="grid gap-3 px-5 py-4 xl:grid-cols-[1fr_100px_1fr_100px_130px_150px] xl:items-center"
                 >
-                  {video.title}
-                </Link>
-                <p className="text-sm text-gray-700">{video.niche}</p>
-                <p className="text-sm text-gray-700">{video.platform}</p>
-                <p className="break-all text-sm text-gray-600">
-                  {video.original_filename || getFileName(video.file_url)}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {formatFileSize(video.file_size)}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {video.uploaded_at
-                    ? new Date(video.uploaded_at).toLocaleDateString("pt-BR")
-                    : "-"}
-                </p>
-                <DownloadVideoButton
-                  fileUrl={video.file_url}
-                  originalFilename={video.original_filename}
-                />
-              </article>
-            ))}
+                  <p className="font-medium text-ink">{asset.title}</p>
+                  <p className="text-sm capitalize text-gray-700">
+                    {asset.asset_type}
+                  </p>
+                  <p className="break-all text-sm text-gray-600">
+                    {asset.original_filename || getFileName(asset.storage_path)}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {formatFileSize(asset.file_size)}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {asset.uploaded_at
+                      ? new Date(asset.uploaded_at).toLocaleDateString("pt-BR")
+                      : "-"}
+                  </p>
+                  <DownloadFileButton
+                    fileUrl={asset.storage_path}
+                    originalFilename={asset.original_filename}
+                  />
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : (
-        <EmptyState text="Nenhum arquivo de video enviado ainda." />
-      )}
+        ) : (
+          <EmptyState text="Nenhum arquivo enviado ainda." />
+        )}
+      </div>
     </>
   );
 }

@@ -26,3 +26,17 @@ export type VideoComment = {
   body: string;
   created_at: string;
 };
+
+export type MediaAsset = {
+  id: string;
+  user_id: string;
+  title: string;
+  asset_type: "video" | "image" | "file";
+  storage_bucket: string;
+  storage_path: string;
+  original_filename: string;
+  file_size: number;
+  mime_type: string;
+  uploaded_at: string;
+  created_at: string;
+};
