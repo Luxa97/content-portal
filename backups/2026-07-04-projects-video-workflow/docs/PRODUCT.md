@@ -39,22 +39,10 @@ Usuarios atuais:
 
 O acesso e privado e limitado por e-mails autorizados.
 
-## Nichos E Projects
-
-Na interface, o usuario ve o termo "Nicho".
-
-Na arquitetura interna, banco de dados, codigo e documentacao tecnica, a entidade
-correta e `Project`.
-
-Exemplos de Projects:
+## Nichos Iniciais
 
 - Creatina
 - Cinta Modeladora
-- Ferramentas
-- Casa e Cozinha
-
-Projects sao criados pelo usuario. Nao existem mais nichos fixos hardcoded como
-fonte principal do sistema.
 
 ## Plataformas
 
@@ -68,7 +56,7 @@ fonte principal do sistema.
 - Cadastro restrito por e-mails autorizados.
 - Dashboard privado.
 - CRUD de videos.
-- Classificacao por Nicho/Project criado pelo usuario.
+- Classificacao por nicho.
 - Classificacao por plataforma.
 - Classificacao por status.
 - Classificacao por responsavel.
@@ -77,21 +65,15 @@ fonte principal do sistema.
 - Upload do arquivo original de video sem compressao.
 - Download do arquivo original por usuario autenticado.
 - Media Library inicial para enviar, listar e baixar videos, fotos e arquivos.
-- Comentarios internos por video.
-- Marcacao de plataformas onde o video foi publicado.
 - Pagina de hooks iniciais.
 - Pagina de referencias virais iniciais.
 
 ## Status Dos Videos
 
-- Em producao
+- Gravado
 - Editando
 - Pronto
-- Agendado
-- Publicado
-- Bloqueado
-- Reprovado
-- Arquivado
+- Postado
 
 ## Tipos De Video
 
@@ -137,12 +119,10 @@ fonte principal do sistema.
 2. Faz login com Supabase Auth.
 3. Entra no dashboard privado.
 4. Cadastra um novo video em `/videos`.
-5. Define Nicho/Project, plataforma, status, responsavel e tipo.
+5. Define nicho, plataforma, status, responsavel e tipo.
 6. Adiciona hook, link do produto, observacoes e link do arquivo.
-7. Registra comentarios internos sem apagar historico.
-8. Marca onde o video foi publicado.
-9. Atualiza o status conforme a producao avanca.
-10. Consulta dashboard e lista para acompanhar o pipeline.
+7. Atualiza o status conforme a producao avanca.
+8. Consulta dashboard e lista para acompanhar o pipeline.
 
 ## Modulos Futuros
 

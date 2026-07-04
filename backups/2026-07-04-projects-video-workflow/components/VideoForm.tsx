@@ -5,24 +5,23 @@ import { FormEvent, useRef, useState } from "react";
 import { Button } from "@/components/Button";
 import { DownloadFileButton } from "@/components/DownloadFileButton";
 import {
+  niches,
   platforms,
   responsibles,
   statuses,
   videoTypes
 } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/browser";
-import type { Project, Video } from "@/lib/types";
+import type { Video } from "@/lib/types";
 
 type VideoFormProps = {
   action: (formData: FormData) => void | Promise<void>;
-  projects: Project[];
   video?: Video;
   submitLabel?: string;
 };
 
 export function VideoForm({
   action,
-  projects,
   video,
   submitLabel = "Salvar video"
 }: VideoFormProps) {
@@ -152,12 +151,6 @@ export function VideoForm({
       <input type="hidden" name="mime_type" value={mimeType} />
       <input type="hidden" name="uploaded_at" value={uploadedAt} />
 
-      {!projects.length ? (
-        <div className="rounded-md bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
-          Crie um nicho antes de cadastrar videos.
-        </div>
-      ) : null}
-
       <label className="block text-sm font-medium text-gray-700">
         Titulo
         <input
@@ -173,17 +166,13 @@ export function VideoForm({
         <label className="block text-sm font-medium text-gray-700">
           Nicho
           <select
-            name="project_id"
-            required
-            defaultValue={video?.project_id ?? projects[0]?.id ?? ""}
+            name="niche"
+            defaultValue={video?.niche ?? niches[0]}
             className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
           >
-            {!projects.length ? (
-              <option value="">Crie um nicho primeiro</option>
-            ) : null}
-            {projects.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
+            {niches.map((niche) => (
+              <option key={niche} value={niche}>
+                {niche}
               </option>
             ))}
           </select>
@@ -342,7 +331,7 @@ export function VideoForm({
         />
       </label>
 
-      <Button className="w-fit gap-2" disabled={isUploading || !projects.length}>
+      <Button className="w-fit gap-2" disabled={isUploading}>
         <Save size={16} />
         {isUploading ? "Enviando..." : submitLabel}
       </Button>

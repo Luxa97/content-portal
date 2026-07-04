@@ -2,35 +2,21 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { createClient } from "@/lib/supabase/server";
-import { responsibles, statuses } from "@/lib/constants";
-
-function getProjectName(video: { projects?: { name: string }[] | { name: string } | null; niche: string }) {
-  if (Array.isArray(video.projects)) {
-    return video.projects[0]?.name ?? video.niche;
-  }
-
-  return video.projects?.name ?? video.niche;
-}
+import { niches, responsibles, statuses } from "@/lib/constants";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  const { data: projects } = await supabase
-    .from("projects")
-    .select("*")
-    .order("created_at", { ascending: true });
-
   const { data: videos } = await supabase
     .from("videos")
-    .select("id,title,niche,platform,status,responsible,created_at,project_id,projects(name)")
+    .select("id,title,niche,platform,status,responsible,created_at")
     .order("created_at", { ascending: false });
 
   const videoList = videos ?? [];
-  const projectList = projects ?? [];
   const recentVideos = videoList.slice(0, 5);
 
-  const countByProject = (projectId: string) => {
-    return videoList.filter((video) => video.project_id === projectId).length;
+  const countByNiche = (niche: string) => {
+    return videoList.filter((video) => video.niche === niche).length;
   };
 
   const countByStatus = (status: string) => {
@@ -66,19 +52,14 @@ export default async function DashboardPage() {
       <section className="mt-6">
         <h2 className="mb-3 font-semibold text-ink">Videos por nicho</h2>
         <div className="grid gap-4 md:grid-cols-2">
-          {projectList.map((project) => (
-            <div key={project.id} className="rounded-md border border-line bg-white p-5">
-              <p className="text-sm text-gray-500">{project.name}</p>
+          {niches.map((niche) => (
+            <div key={niche} className="rounded-md border border-line bg-white p-5">
+              <p className="text-sm text-gray-500">{niche}</p>
               <strong className="mt-2 block text-3xl text-ink">
-                {countByProject(project.id)}
+                {countByNiche(niche)}
               </strong>
             </div>
           ))}
-          {!projectList.length ? (
-            <div className="rounded-md border border-line bg-white p-5 text-sm text-gray-600">
-              Nenhum nicho criado ainda.
-            </div>
-          ) : null}
         </div>
       </section>
 
@@ -134,9 +115,7 @@ export default async function DashboardPage() {
                     {new Date(video.created_at).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
-                <p className="text-sm text-gray-600">
-                  {getProjectName(video)}
-                </p>
+                <p className="text-sm text-gray-600">{video.niche}</p>
                 <p className="text-sm text-gray-600">{video.platform}</p>
                 <span className="w-fit rounded-md bg-mist px-2 py-1 text-xs font-medium capitalize text-gray-700">
                   {video.status}

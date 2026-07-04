@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { ProjectManager } from "@/components/ProjectManager";
 import { VideoForm } from "@/components/VideoForm";
 import { VideoList } from "@/components/VideoList";
 import { createVideo } from "@/app/(private)/videos/actions";
 import { createClient } from "@/lib/supabase/server";
-import type { Project, Video } from "@/lib/types";
 
 export default async function VideosPage({
   searchParams
@@ -15,25 +13,10 @@ export default async function VideosPage({
 }) {
   const supabase = await createClient();
 
-  const { data: projects } = await supabase
-    .from("projects")
-    .select("*")
-    .order("created_at", { ascending: true });
-
   const { data: videos } = await supabase
     .from("videos")
-    .select("*, projects(*), video_comments(*), video_publications(*)")
+    .select("*")
     .order("created_at", { ascending: false });
-
-  const projectList = (projects ?? []) as Project[];
-  const videoList = (videos ?? []) as Video[];
-  const videoCounts = videoList.reduce<Record<string, number>>((counts, video) => {
-    if (video.project_id) {
-      counts[video.project_id] = (counts[video.project_id] ?? 0) + 1;
-    }
-
-    return counts;
-  }, {});
 
   return (
     <>
@@ -65,18 +48,12 @@ export default async function VideosPage({
       ) : null}
 
       <div className="grid gap-6">
-        <ProjectManager projects={projectList} videoCounts={videoCounts} />
-
         <section id="novo-video">
           <h2 className="mb-3 font-semibold text-ink">Novo video</h2>
-          <VideoForm
-            action={createVideo}
-            projects={projectList}
-            submitLabel="Criar video"
-          />
+          <VideoForm action={createVideo} submitLabel="Criar video" />
         </section>
 
-        <VideoList videos={videoList} />
+        <VideoList videos={videos ?? []} />
       </div>
     </>
   );

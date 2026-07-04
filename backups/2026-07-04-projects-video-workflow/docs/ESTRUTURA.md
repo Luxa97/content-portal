@@ -43,9 +43,6 @@ Arquivos principais:
 - `EmptyState.tsx`: estado vazio reutilizavel.
 - `VideoForm.tsx`: formulario de criacao e edicao de videos.
 - `VideoList.tsx`: lista de videos.
-- `ProjectManager.tsx`: cria, edita e exclui Nichos/Projects.
-- `VideoComments.tsx`: comentarios internos por video.
-- `VideoPublications.tsx`: plataformas onde o video foi publicado.
 - `DeleteVideoButton.tsx`: exclusao com confirmacao no navegador.
 - `DownloadFileButton.tsx`: gera link temporario para baixar o arquivo original.
 - `MediaUploadForm.tsx`: formulario de upload da Media Library.
@@ -56,7 +53,7 @@ Contem configuracoes, constantes, tipos e auxiliares.
 
 Arquivos principais:
 
-- `lib/constants.ts`: plataformas, status, responsaveis e tipos de video.
+- `lib/constants.ts`: nichos, plataformas, status, responsaveis e tipos de video.
 - `lib/types.ts`: tipos TypeScript compartilhados.
 - `lib/allowed-users.ts`: lista de e-mails autorizados.
 - `lib/supabase/server.ts`: cliente Supabase para servidor.
@@ -73,7 +70,6 @@ Arquivos principais:
 - `video-classification-migration.sql`: migration de responsavel e tipo de video.
 - `video-storage-migration.sql`: migration do bucket privado de videos.
 - `media-assets-migration.sql`: migration da tabela `media_assets`.
-- `projects-video-workflow-migration.sql`: migration de Projects, comentarios, publicacoes e novos status.
 
 Novas migrations devem ser criadas nesta pasta e documentadas em
 `docs/DATABASE.md`.
@@ -120,38 +116,15 @@ Padrao recomendado:
 ## Fluxo De Videos E Media
 
 - Videos: `/videos` e responsavel pelos registros de conteudo.
-- Nichos na interface sao Projects no banco e no codigo.
 - Media Library: `/media` e responsavel por videos, fotos e arquivos originais.
-- Projects: `/videos` mostra `ProjectManager` para criar, editar e excluir Nichos.
 - Criacao de registro: `/videos` usa `VideoForm` com `createVideo`.
 - Listagem de registros: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
-- Comentarios: `/videos/[id]` usa `VideoComments`.
-- Publicacoes: `/videos/[id]` usa `VideoPublications`.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
 - Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho privado em `storage_path` e `file_url`.
 - Download: `DownloadFileButton` cria uma URL assinada temporaria para baixar o arquivo original.
 - Media Library: `/media` salva arquivos em `media_assets` e reaproveita o download seguro.
 - Dados persistem na tabela `videos`.
-
-## Fluxo De Projects
-
-1. Usuario acessa `/videos`.
-2. Clica em "Novo Nicho".
-3. O modal cria um registro em `projects`.
-4. A tela e atualizada com `router.refresh`, sem recarregar a pagina inteira.
-5. Ao criar ou editar video, o usuario seleciona um Nicho.
-6. Internamente, o video salva `project_id` e mantem `niche` como espelho de compatibilidade.
-7. Um Project so pode ser excluido quando nao houver videos vinculados.
-
-## Fluxo De Comentarios E Publicacoes
-
-1. Usuario abre `/videos/[id]`.
-2. Pode adicionar comentarios internos ao video.
-3. Cada comentario guarda texto, data, hora e usuario quando disponivel.
-4. Comentarios antigos continuam no historico.
-5. Em "Publicado em", o usuario marca TikTok, Instagram, Facebook, YouTube, Shopee, Amazon ou Outro.
-6. Ao marcar uma plataforma, o sistema registra data e hora.
 
 ## Fluxo De Upload E Download
 

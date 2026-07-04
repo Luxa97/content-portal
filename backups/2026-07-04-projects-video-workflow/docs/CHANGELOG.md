@@ -2,17 +2,6 @@
 
 Historico relevante do Content Portal, organizado por data e versao.
 
-## 2026-07-04 - v0.5.0 - Projects, comentarios e publicacoes
-
-- Substituidos nichos fixos por Projects criados pelo usuario.
-- Mantido o termo "Nicho" na interface para simplicidade.
-- Criada migration `supabase/projects-video-workflow-migration.sql`.
-- Adicionado gerenciamento de Nichos/Projects na pagina `/videos`.
-- Videos agora podem ser vinculados e movidos para outro Project.
-- Adicionados comentarios internos com historico por video.
-- Adicionada secao "Publicado em" com data e hora por plataforma.
-- Atualizados status de video para o novo fluxo operacional.
-
 ## 2026-07-04 - v0.4.1 - Upload/download de video mais confiavel
 
 - Reforcada a validacao de caminhos privados antes de salvar arquivos no banco.

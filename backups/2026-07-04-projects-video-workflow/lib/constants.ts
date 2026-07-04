@@ -1,22 +1,19 @@
+export const niches = [
+  "Creatina",
+  "Cinta Modeladora"
+] as const;
+
 export const platforms = [
   "TikTok",
   "Instagram",
-  "Facebook",
-  "YouTube",
-  "Shopee",
-  "Amazon",
-  "Outro"
+  "Shopee"
 ] as const;
 
 export const statuses = [
-  "Em produção",
+  "Gravado",
   "Editando",
   "Pronto",
-  "Agendado",
-  "Publicado",
-  "Bloqueado",
-  "Reprovado",
-  "Arquivado"
+  "Postado"
 ] as const;
 
 export const responsibles = [
@@ -38,4 +35,3 @@ export const videoTypes = [
 export type VideoStatus = (typeof statuses)[number];
 export type VideoResponsible = (typeof responsibles)[number];
 export type VideoType = (typeof videoTypes)[number];
-export type PublicationPlatform = (typeof platforms)[number];

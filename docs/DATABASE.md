@@ -2,9 +2,23 @@
 
 Este documento descreve o banco de dados atual do Content Portal.
 
+## Conceito Principal
+
+Na interface, o usuario ve o termo "Nicho".
+
+Na arquitetura interna, banco de dados, codigo e documentacao tecnica, o nome da
+entidade e `Project`.
+
+Exemplos:
+
+- Project: Creatina
+- Project: Cinta Modeladora
+- Project: Ferramentas
+- Project: Casa e Cozinha
+
 ## Provedor
 
-O projeto usa Supabase, que fornece:
+O projeto usa Supabase para:
 
 - Postgres.
 - Auth.
@@ -13,223 +27,159 @@ O projeto usa Supabase, que fornece:
 
 ## Tabelas Atuais
 
-### `public.videos`
+### `public.projects`
 
-Tabela principal do MVP. Armazena os videos planejados ou produzidos.
+Tabela tecnica dos Nichos exibidos na interface.
 
 Campos:
 
-- `id`: identificador unico do video.
-- `user_id`: usuario dono do registro, ligado a `auth.users`.
-- `title`: titulo do video.
-- `niche`: nicho do conteudo.
-- `platform`: plataforma principal.
-- `status`: etapa atual da producao.
-- `responsible`: responsavel pelo video.
-- `video_type`: tipo de video.
-- `hook`: frase inicial ou promessa do conteudo.
-- `product_link`: link do produto.
-- `notes`: observacoes livres.
-- `file_url`: caminho privado do arquivo no Supabase Storage, mantido por compatibilidade do MVP.
-- `storage_path`: caminho privado principal do arquivo no Supabase Storage.
-- `original_filename`: nome original do arquivo enviado.
-- `file_size`: tamanho do arquivo em bytes.
-- `mime_type`: tipo MIME informado pelo navegador.
-- `uploaded_at`: data e hora do upload.
+- `id`: identificador unico.
+- `user_id`: usuario dono do Project.
+- `name`: nome exibido como Nicho.
+- `color`: cor opcional.
+- `icon`: icone opcional.
+- `description`: descricao opcional.
 - `created_at`: data de criacao.
 
-Valores atuais de `niche`:
+### `public.videos`
 
-- Creatina
-- Cinta Modeladora
+Tabela principal dos videos planejados ou produzidos.
 
-Valores atuais de `platform`:
+Campos principais:
 
-- TikTok
-- Instagram
-- Shopee
+- `id`: identificador unico.
+- `user_id`: usuario dono do video.
+- `project_id`: Project/Nicho ao qual o video pertence.
+- `title`: titulo do video.
+- `niche`: espelho do nome do Project, mantido por compatibilidade.
+- `platform`: plataforma principal.
+- `status`: etapa atual do fluxo.
+- `responsible`: responsavel.
+- `video_type`: tipo de video.
+- `hook`: frase inicial.
+- `product_link`: link do produto.
+- `notes`: observacoes.
+- `file_url`: caminho privado legado do arquivo no Storage.
+- `storage_path`: caminho privado principal do arquivo no Storage.
+- `original_filename`: nome original do arquivo.
+- `file_size`: tamanho em bytes.
+- `mime_type`: tipo MIME.
+- `uploaded_at`: data do upload.
+- `created_at`: data de criacao.
 
-Valores atuais de `status`:
+Status atuais:
 
-- Gravado
+- Em producao
 - Editando
 - Pronto
-- Postado
-
-Valores atuais de `responsible`:
-
-- Lucas
-- Larissa
-
-Valores atuais de `video_type`:
-
-- Review
-- Oferta
-- Comparação
-- Rotina
-- Unboxing
-- Demonstração
-- Referência viral
-- Outro
+- Agendado
+- Publicado
+- Bloqueado
+- Reprovado
+- Arquivado
 
 ### `public.video_comments`
 
-Tabela criada no schema inicial para comentarios por video.
+Historico de comentarios internos por video.
 
 Campos:
 
-- `id`: identificador unico do comentario.
+- `id`: identificador unico.
 - `video_id`: video relacionado.
 - `user_id`: usuario que criou o comentario.
+- `user_email`: e-mail do usuario, se disponivel.
 - `body`: texto do comentario.
-- `created_at`: data de criacao.
+- `created_at`: data e hora.
 
-Observacao: a interface atual de CRUD de videos nao usa comentarios como foco
-principal, mas a tabela existe no schema.
+Comentarios antigos nao sao apagados automaticamente.
+
+### `public.video_publications`
+
+Registra onde o video foi publicado.
+
+Campos:
+
+- `id`: identificador unico.
+- `video_id`: video relacionado.
+- `user_id`: usuario que marcou a publicacao.
+- `platform`: plataforma.
+- `published_at`: data e hora da marcacao.
+- `created_at`: data de criacao do registro.
+
+Plataformas atuais:
+
+- TikTok
+- Instagram
+- Facebook
+- YouTube
+- Shopee
+- Amazon
+- Outro
+
+### `public.video_statuses`
+
+Tabela simples com status e ordem de exibicao. Ela documenta no banco os status
+oficiais do fluxo.
 
 ### `public.media_assets`
 
 Tabela da Media Library. Armazena videos, fotos e arquivos enviados diretamente
 pela pagina `/media`.
 
-Campos:
-
-- `id`: identificador unico do asset.
-- `user_id`: usuario dono do arquivo.
-- `title`: nome exibido na biblioteca.
-- `asset_type`: tipo geral do arquivo: `video`, `image` ou `file`.
-- `storage_bucket`: bucket onde o arquivo foi salvo.
-- `storage_path`: caminho privado do arquivo no Storage.
-- `original_filename`: nome original do arquivo.
-- `file_size`: tamanho do arquivo em bytes.
-- `mime_type`: tipo MIME informado pelo navegador.
-- `uploaded_at`: data de upload.
-- `created_at`: data de criacao do registro.
-
 ## Relacionamentos
 
+- `projects.user_id` referencia `auth.users.id`.
 - `videos.user_id` referencia `auth.users.id`.
+- `videos.project_id` referencia `projects.id`.
 - `video_comments.video_id` referencia `videos.id`.
 - `video_comments.user_id` referencia `auth.users.id`.
+- `video_publications.video_id` referencia `videos.id`.
+- `video_publications.user_id` referencia `auth.users.id`.
 - `media_assets.user_id` referencia `auth.users.id`.
 
 ## RLS
 
 RLS esta habilitado em:
 
+- `public.projects`
 - `public.videos`
 - `public.video_comments`
+- `public.video_publications`
 - `public.media_assets`
 
-Politicas atuais de `videos`:
+Regras principais:
 
-- Usuario pode ler seus proprios videos.
-- Usuario pode criar videos para si mesmo.
-- Usuario pode atualizar seus proprios videos.
-- Usuario pode excluir seus proprios videos.
-
-Politicas atuais de `video_comments`:
-
-- Usuario pode ler comentarios de seus proprios videos.
-- Usuario pode criar comentarios em seus proprios videos.
-
-Politicas atuais de `media_assets`:
-
-- Usuario pode ler seus proprios assets.
-- Usuario pode criar assets para si mesmo.
-- Usuario pode atualizar seus proprios assets.
-- Usuario pode excluir seus proprios assets.
+- Usuario so acessa seus proprios Projects.
+- Usuario so acessa seus proprios videos.
+- Usuario so acessa comentarios e publicacoes dos seus proprios videos.
+- Usuario so acessa seus proprios assets da Media Library.
 
 ## Storage
 
-O schema cria um bucket privado chamado `videos`.
+O bucket `videos` permanece privado.
 
-Politicas atuais:
-
-- Usuario pode enviar arquivos para sua propria pasta.
-- Usuario pode ler arquivos da sua propria pasta.
-- Usuario pode excluir arquivos da sua propria pasta.
-
-Os arquivos originais sao salvos sem compressao, conversao ou reducao de
-qualidade. O Supabase Storage preserva o arquivo original enviado pelo usuario.
-
-Organizacao dos arquivos:
-
-```text
-videos/
-  user-id/
-    timestamp-nome-do-arquivo.mp4
-```
-
+O app salva o arquivo original sem compressao, conversao ou reducao de qualidade.
 O valor salvo em `videos.storage_path`, `videos.file_url` ou
-`media_assets.storage_path` e o caminho privado do arquivo dentro do bucket `videos`.
-Para baixar, o app cria uma URL
-assinada temporaria usando a sessao autenticada do usuario.
+`media_assets.storage_path` e o caminho privado dentro do bucket.
 
-A Media Library lista registros da tabela `media_assets`.
-
-Metadados salvos por upload:
-
-- Nome original do arquivo.
-- Tamanho do arquivo.
-- Tipo MIME.
-- Caminho no Storage.
-- Data de upload.
-- Dono do registro por `videos.user_id` ou `media_assets.user_id`.
+Downloads usam URLs assinadas temporarias para usuarios autenticados.
 
 ## Migrations
 
 Arquivos atuais:
 
 - `supabase/schema.sql`: schema base.
-- `supabase/videos-crud-migration.sql`: adiciona campos editoriais e ajusta valores do CRUD.
-- `supabase/video-classification-migration.sql`: adiciona `responsible` e `video_type`.
-- `supabase/video-storage-migration.sql`: garante bucket privado `videos` e politicas de upload/download.
-- `supabase/video-metadata-migration.sql`: adiciona metadados do arquivo original.
-- `supabase/media-assets-migration.sql`: cria a tabela `media_assets`.
-
-## Media Library
-
-Versao atual:
-
-- Usa a tabela `media_assets`.
-- Lista videos, fotos e arquivos enviados em `/media`.
-- Usa o bucket privado `videos`.
-- Baixa arquivos por URL assinada temporaria.
-- Mostra nome original, tamanho e data de upload quando esses dados existem.
-
-Possivel evolucao futura:
-
-- Relacionar multiplos arquivos a um video.
-- Registrar metadados como tamanho, duracao, codec e formato.
-- Registrar thumbnails geradas em processamento externo.
+- `supabase/videos-crud-migration.sql`: CRUD inicial de videos.
+- `supabase/video-classification-migration.sql`: responsavel e tipo de video.
+- `supabase/video-storage-migration.sql`: bucket privado `videos`.
+- `supabase/video-metadata-migration.sql`: metadados do arquivo original.
+- `supabase/media-assets-migration.sql`: tabela `media_assets`.
+- `supabase/projects-video-workflow-migration.sql`: Projects, vinculo video -> Project, novos status, comentarios e publicacoes.
 
 ## Boas Praticas
 
 - Toda mudanca de estrutura deve ter migration.
 - Toda migration deve ser documentada aqui.
-- Nao alterar dados sensiveis diretamente sem backup.
 - Manter RLS ativo em tabelas com dados de usuarios.
-- Preferir campos simples enquanto o MVP estiver pequeno.
-
-## Campos Planejados
-
-Possiveis campos futuros em `videos`:
-
-- `published_at`
-- `scheduled_for`
-- `performance_views`
-- `performance_clicks`
-- `performance_sales`
-- `external_post_url`
-- `storage_uploaded_at`
-
-Esses campos ainda nao devem ser criados sem tarefa especifica.
-
-## Regras De Seguranca Do Banco
-
-- Dados devem ser isolados por usuario.
-- Chaves privadas nao devem aparecer no frontend.
-- Buckets devem permanecer privados ate decisao documentada.
-- Toda abertura de permissao deve ser registrada em `docs/DECISIONS.md`.
-- Downloads devem usar URLs assinadas temporarias para usuarios autenticados.
+- Nao expor chaves privadas.
+- Nao tornar Storage publico sem decisao documentada.

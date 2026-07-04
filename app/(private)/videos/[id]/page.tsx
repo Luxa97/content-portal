@@ -3,8 +3,11 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { VideoForm } from "@/components/VideoForm";
+import { VideoComments } from "@/components/VideoComments";
+import { VideoPublications } from "@/components/VideoPublications";
 import { updateVideo } from "@/app/(private)/videos/actions";
 import { createClient } from "@/lib/supabase/server";
+import type { Project, VideoComment, VideoPublication } from "@/lib/types";
 
 export default async function EditVideoPage({
   params
@@ -13,9 +16,14 @@ export default async function EditVideoPage({
 }) {
   const supabase = await createClient();
 
+  const { data: projects } = await supabase
+    .from("projects")
+    .select("*")
+    .order("created_at", { ascending: true });
+
   const { data: video } = await supabase
     .from("videos")
-    .select("*")
+    .select("*, video_comments(*), video_publications(*)")
     .eq("id", params.id)
     .single();
 
@@ -38,7 +46,29 @@ export default async function EditVideoPage({
         description="Atualize as informacoes principais deste conteudo."
       />
 
-      <VideoForm action={updateVideo} video={video} submitLabel="Salvar alteracoes" />
+      <div className="grid gap-6">
+        <VideoForm
+          action={updateVideo}
+          projects={(projects ?? []) as Project[]}
+          video={video}
+          submitLabel="Salvar alteracoes"
+        />
+
+        <VideoPublications
+          videoId={video.id}
+          publications={
+            ((video.video_publications ?? []) as VideoPublication[])
+          }
+        />
+
+        <VideoComments
+          videoId={video.id}
+          comments={((video.video_comments ?? []) as VideoComment[]).sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )}
+        />
+      </div>
     </>
   );
 }

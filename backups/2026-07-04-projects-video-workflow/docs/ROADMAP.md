@@ -24,7 +24,6 @@ Status usados:
 - Concluido: Dashboard inicial.
 - Concluido: CRUD de videos.
 - Concluido: Classificacao por nicho.
-- Concluido: Nichos dinamicos usando Projects.
 - Concluido: Classificacao por plataforma.
 - Concluido: Classificacao por status.
 - Concluido: Classificacao por responsavel.
@@ -32,8 +31,6 @@ Status usados:
 - Concluido: Upload e download de video original sem compressao.
 - Concluido: Media Library inicial em `/media`.
 - Concluido: Upload e download de fotos e arquivos originais.
-- Concluido: Comentarios internos por video.
-- Concluido: Marcacao de plataformas publicadas por video.
 - Concluido: Pagina de hooks.
 - Concluido: Pagina de referencias virais.
 
