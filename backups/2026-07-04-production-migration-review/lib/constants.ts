@@ -9,28 +9,27 @@ export const platforms = [
 ] as const;
 
 export const accountStatuses = [
-  "Ativa",
-  "Inativa",
-  "Arquivada"
+  "ativa",
+  "inativa"
 ] as const;
 
 export const publicationStatuses = [
-  "Nao postado",
+  "Não postado",
   "Agendado",
   "Publicado",
   "Viralizou",
   "Bom engajamento",
-  "Medio engajamento",
+  "Médio engajamento",
   "Baixo desempenho",
   "Bloqueado",
   "Removido",
-  "Em analise",
+  "Em análise",
   "Repostar",
   "Arquivado"
 ] as const;
 
 export const statuses = [
-  "Em producao",
+  "Em produção",
   "Editando",
   "Pronto",
   "Agendado",

@@ -175,12 +175,6 @@ Download:
 4. O arquivo nao e comprimido, convertido ou modificado.
 5. A interface informa quando o link esta sendo gerado e quando o download inicia.
 
-Estado atual:
-
-- `/videos`: upload e download de video original.
-- `/media`: upload e download de videos, fotos e arquivos/documentos.
-- Nenhum upload faz compressao, conversao ou thumbnail automatica.
-
 ## Media Tools Futuro
 
 Ferramentas de midia planejadas devem ficar fora da Vercel quando envolverem

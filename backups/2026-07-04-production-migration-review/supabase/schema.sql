@@ -20,7 +20,7 @@ create table public.videos (
   title text not null,
   niche text not null,
   platform text not null check (platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
-  status text not null default 'Em producao' check (status in ('Em producao', 'Editando', 'Pronto', 'Agendado', 'Publicado', 'Bloqueado', 'Reprovado', 'Arquivado')),
+  status text not null default 'Em produção' check (status in ('Em produção', 'Editando', 'Pronto', 'Agendado', 'Publicado', 'Bloqueado', 'Reprovado', 'Arquivado')),
   responsible text not null default 'Lucas' check (responsible in ('Lucas', 'Larissa')),
   video_type text not null default 'Review' check (video_type in ('Review', 'Oferta', 'Comparação', 'Rotina', 'Unboxing', 'Demonstração', 'Referência viral', 'Outro')),
   hook text,
@@ -42,7 +42,7 @@ create table public.accounts (
   platform text not null check (platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
   name text not null,
   username text not null,
-  status text not null default 'Ativa' check (status in ('Ativa', 'Inativa', 'Arquivada')),
+  status text not null default 'ativa' check (status in ('ativa', 'inativa')),
   notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -53,7 +53,6 @@ create table public.video_comments (
   video_id uuid not null references public.videos(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
   user_email text,
-  comment text not null default '',
   body text not null,
   created_at timestamptz not null default now()
 );
@@ -63,7 +62,7 @@ create table public.video_publications (
   video_id uuid not null references public.videos(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
   account_id uuid not null references public.accounts(id) on delete cascade,
-  status text not null default 'Nao postado' check (status in ('Nao postado', 'Agendado', 'Publicado', 'Viralizou', 'Bom engajamento', 'Medio engajamento', 'Baixo desempenho', 'Bloqueado', 'Removido', 'Em analise', 'Repostar', 'Arquivado')),
+  status text not null default 'Não postado' check (status in ('Não postado', 'Agendado', 'Publicado', 'Viralizou', 'Bom engajamento', 'Médio engajamento', 'Baixo desempenho', 'Bloqueado', 'Removido', 'Em análise', 'Repostar', 'Arquivado')),
   posted_at timestamptz,
   post_url text,
   views integer,
@@ -132,10 +131,6 @@ on public.accounts for update
 using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
 
-create policy "Users can delete own accounts"
-on public.accounts for delete
-using (auth.uid() = user_id);
-
 create policy "Users can read own videos"
 on public.videos for select
 using (auth.uid() = user_id);
@@ -169,37 +164,6 @@ on public.video_comments for insert
 with check (
   auth.uid() = user_id
   and exists (
-    select 1
-    from public.videos
-    where videos.id = video_comments.video_id
-      and videos.user_id = auth.uid()
-  )
-);
-
-create policy "Users can update comments on own videos"
-on public.video_comments for update
-using (
-  exists (
-    select 1
-    from public.videos
-    where videos.id = video_comments.video_id
-      and videos.user_id = auth.uid()
-  )
-)
-with check (
-  auth.uid() = user_id
-  and exists (
-    select 1
-    from public.videos
-    where videos.id = video_comments.video_id
-      and videos.user_id = auth.uid()
-  )
-);
-
-create policy "Users can delete comments on own videos"
-on public.video_comments for delete
-using (
-  exists (
     select 1
     from public.videos
     where videos.id = video_comments.video_id
@@ -263,7 +227,7 @@ using (
 
 insert into public.video_statuses (name, sort_order)
 values
-  ('Em producao', 1),
+  ('Em produção', 1),
   ('Editando', 2),
   ('Pronto', 3),
   ('Agendado', 4),

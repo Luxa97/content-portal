@@ -226,7 +226,7 @@ export function AccountManager({ accounts, projects }: AccountManagerProps) {
               Status
               <select
                 name="status"
-                defaultValue={editingAccount?.status ?? "Ativa"}
+                defaultValue={editingAccount?.status ?? "ativa"}
                 className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
               >
                 {accountStatuses.map((status) => (

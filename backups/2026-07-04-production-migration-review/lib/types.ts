@@ -15,7 +15,7 @@ export type Account = {
   platform: string;
   name: string;
   username: string;
-  status: "Ativa" | "Inativa" | "Arquivada";
+  status: "ativa" | "inativa";
   notes: string | null;
   created_at: string;
   updated_at: string;

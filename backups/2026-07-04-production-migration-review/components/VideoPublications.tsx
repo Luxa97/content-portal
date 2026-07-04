@@ -33,7 +33,7 @@ export function VideoPublications({
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const activeAccounts = accounts.filter((account) => account.status === "Ativa");
+  const activeAccounts = accounts.filter((account) => account.status === "ativa");
   const editingPublication =
     publications.find((publication) => publication.id === editingId) ?? null;
 

@@ -53,7 +53,7 @@ Campos:
 - `platform`: TikTok, Instagram, YouTube, Facebook, Shopee, Amazon ou Outro.
 - `name`: nome interno da conta.
 - `username`: usuario da conta.
-- `status`: `Ativa`, `Inativa` ou `Arquivada`.
+- `status`: `ativa` ou `inativa`.
 - `notes`: observacoes opcionais.
 - `created_at`: data de criacao.
 - `updated_at`: data da ultima atualizacao.
@@ -105,7 +105,6 @@ Campos:
 - `video_id`: video relacionado.
 - `user_id`: usuario que criou o comentario.
 - `user_email`: e-mail do usuario, se disponivel.
-- `comment`: texto do comentario, campo tecnico principal.
 - `body`: texto do comentario.
 - `created_at`: data e hora.
 
@@ -211,23 +210,8 @@ Arquivos atuais:
 - `supabase/video-storage-migration.sql`: bucket privado `videos`.
 - `supabase/video-metadata-migration.sql`: metadados do arquivo original.
 - `supabase/media-assets-migration.sql`: tabela `media_assets`.
-- `supabase/projects-video-workflow-migration.sql`: Projects, vinculo video -> Project, novos status e comentarios internos.
+- `supabase/projects-video-workflow-migration.sql`: Projects, vinculo video -> Project, novos status, comentarios e publicacoes.
 - `supabase/accounts-video-publications-migration.sql`: contas reais e historico manual de postagens por conta.
-
-Ordem recomendada para producao:
-
-1. `supabase/projects-video-workflow-migration.sql`
-2. `supabase/accounts-video-publications-migration.sql`
-
-## Estado Atual Dos Uploads
-
-- Upload de video em `/videos`: habilitado para mp4, mov, m4v e webm.
-- Download do video original: habilitado por URL assinada temporaria.
-- Upload de imagem em `/media`: habilitado.
-- Upload de arquivo/documento em `/media`: habilitado para formatos comuns como pdf, txt, csv, doc, docx, xls, xlsx, ppt, pptx e zip.
-
-Arquivos originais sao preservados sem compressao, conversao ou reducao de
-qualidade.
 
 ## Modelo De Postagens
 

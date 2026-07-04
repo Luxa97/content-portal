@@ -6,8 +6,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 
 - Criada entidade `accounts` para contas reais por plataforma.
 - Evoluida `video_publications` para representar onde cada video foi postado.
-- Revisadas migrations para execucao mais segura no Supabase SQL Editor.
-- `video_comments` agora e criado com seguranca quando ainda nao existir.
 - A interface usa termos simples como "Publicado em" e "Historico de postagens".
 - Adicionados status, link, metricas e observacoes por postagem manual.
 - Adicionados filtros por nicho, plataforma, conta, status, bloqueados, viralizados e nao publicados.

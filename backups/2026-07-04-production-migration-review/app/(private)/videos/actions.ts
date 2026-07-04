@@ -144,7 +144,7 @@ export async function createVideo(formData: FormData) {
   const title = String(formData.get("title") ?? "");
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
-  const status = String(formData.get("status") ?? "Em producao");
+  const status = String(formData.get("status") ?? "Em produção");
   const responsible = String(formData.get("responsible") ?? "");
   const videoType = String(formData.get("video_type") ?? "");
   const hook = String(formData.get("hook") ?? "");
@@ -206,7 +206,7 @@ export async function updateVideo(formData: FormData) {
   const title = String(formData.get("title") ?? "");
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
-  const status = String(formData.get("status") ?? "Em producao");
+  const status = String(formData.get("status") ?? "Em produção");
   const responsible = String(formData.get("responsible") ?? "");
   const videoType = String(formData.get("video_type") ?? "");
   const hook = String(formData.get("hook") ?? "");
@@ -300,7 +300,6 @@ export async function addVideoComment(formData: FormData) {
     video_id: videoId,
     user_id: user.id,
     user_email: user.email ?? null,
-    comment: body,
     body
   });
 
@@ -318,7 +317,7 @@ export async function createAccount(formData: FormData) {
   const platform = String(formData.get("platform") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const username = String(formData.get("username") ?? "").trim();
-  const status = String(formData.get("status") ?? "Ativa");
+  const status = String(formData.get("status") ?? "ativa");
   const notes = String(formData.get("notes") ?? "").trim();
   const { supabase, user } = await getUser();
 
@@ -352,7 +351,7 @@ export async function updateAccount(formData: FormData) {
   const platform = String(formData.get("platform") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const username = String(formData.get("username") ?? "").trim();
-  const status = String(formData.get("status") ?? "Ativa");
+  const status = String(formData.get("status") ?? "ativa");
   const notes = String(formData.get("notes") ?? "").trim();
   const { supabase, user } = await getUser();
 
@@ -392,7 +391,7 @@ export async function archiveAccount(id: string) {
 
   const { error } = await supabase
     .from("accounts")
-    .update({ status: "Inativa", updated_at: new Date().toISOString() })
+    .update({ status: "inativa", updated_at: new Date().toISOString() })
     .eq("id", id)
     .eq("user_id", user.id);
 
@@ -408,7 +407,7 @@ export async function archiveAccount(id: string) {
 export async function createVideoPublication(formData: FormData) {
   const videoId = String(formData.get("video_id") ?? "");
   const accountId = String(formData.get("account_id") ?? "");
-  const status = String(formData.get("status") ?? "Nao postado");
+  const status = String(formData.get("status") ?? "Não postado");
   const postedAt = String(formData.get("posted_at") ?? "");
   const postUrl = String(formData.get("post_url") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
@@ -447,7 +446,7 @@ export async function updateVideoPublication(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const videoId = String(formData.get("video_id") ?? "");
   const accountId = String(formData.get("account_id") ?? "");
-  const status = String(formData.get("status") ?? "Nao postado");
+  const status = String(formData.get("status") ?? "Não postado");
   const postedAt = String(formData.get("posted_at") ?? "");
   const postUrl = String(formData.get("post_url") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();

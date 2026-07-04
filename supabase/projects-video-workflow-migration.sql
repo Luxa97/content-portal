@@ -1,5 +1,8 @@
 -- Evolui Nichos fixos para Projects criados pelo usuario.
 -- A interface pode continuar usando o termo "Nicho", mas a entidade tecnica e `projects`.
+-- Esta migration e idempotente e segura para executar no Supabase SQL Editor.
+
+create extension if not exists "pgcrypto";
 
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
@@ -12,67 +15,79 @@ create table if not exists public.projects (
   unique (user_id, name)
 );
 
+create table if not exists public.videos (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  title text not null,
+  niche text not null default 'Sem nicho',
+  platform text not null default 'TikTok',
+  status text not null default 'Em producao',
+  responsible text,
+  video_type text,
+  hook text,
+  product_link text,
+  notes text,
+  file_url text,
+  storage_path text,
+  original_filename text,
+  file_size bigint,
+  mime_type text,
+  uploaded_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
 alter table public.projects enable row level security;
+alter table public.videos enable row level security;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'projects'
-      and policyname = 'Users can read own projects'
-  ) then
-    create policy "Users can read own projects"
-    on public.projects for select
-    using (auth.uid() = user_id);
-  end if;
-end $$;
+drop policy if exists "Users can read own projects" on public.projects;
+create policy "Users can read own projects"
+on public.projects for select
+using (auth.uid() = user_id);
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'projects'
-      and policyname = 'Users can create own projects'
-  ) then
-    create policy "Users can create own projects"
-    on public.projects for insert
-    with check (auth.uid() = user_id);
-  end if;
-end $$;
+drop policy if exists "Users can create own projects" on public.projects;
+create policy "Users can create own projects"
+on public.projects for insert
+with check (auth.uid() = user_id);
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'projects'
-      and policyname = 'Users can update own projects'
-  ) then
-    create policy "Users can update own projects"
-    on public.projects for update
-    using (auth.uid() = user_id)
-    with check (auth.uid() = user_id);
-  end if;
-end $$;
+drop policy if exists "Users can update own projects" on public.projects;
+create policy "Users can update own projects"
+on public.projects for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'projects'
-      and policyname = 'Users can delete own projects'
-  ) then
-    create policy "Users can delete own projects"
-    on public.projects for delete
-    using (auth.uid() = user_id);
-  end if;
-end $$;
+drop policy if exists "Users can delete own projects" on public.projects;
+create policy "Users can delete own projects"
+on public.projects for delete
+using (auth.uid() = user_id);
+
+drop policy if exists "Users can read own videos" on public.videos;
+create policy "Users can read own videos"
+on public.videos for select
+using (auth.uid() = user_id);
+
+drop policy if exists "Users can create own videos" on public.videos;
+create policy "Users can create own videos"
+on public.videos for insert
+with check (auth.uid() = user_id);
+
+drop policy if exists "Users can update own videos" on public.videos;
+create policy "Users can update own videos"
+on public.videos for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+
+drop policy if exists "Users can delete own videos" on public.videos;
+create policy "Users can delete own videos"
+on public.videos for delete
+using (auth.uid() = user_id);
 
 alter table public.videos
-add column if not exists project_id uuid references public.projects(id) on delete restrict;
+add column if not exists project_id uuid references public.projects(id) on delete restrict,
+add column if not exists storage_path text,
+add column if not exists original_filename text,
+add column if not exists file_size bigint,
+add column if not exists mime_type text,
+add column if not exists uploaded_at timestamptz;
 
 alter table public.videos
 drop constraint if exists videos_niche_check;
@@ -84,20 +99,21 @@ alter table public.videos
 drop constraint if exists videos_status_check;
 
 alter table public.videos
-alter column status set default 'Em produção';
+alter column status set default 'Em producao';
 
 update public.videos
 set status = case status
-  when 'Gravado' then 'Em produção'
+  when 'Gravado' then 'Em producao'
+  when 'Em produção' then 'Em producao'
   when 'Postado' then 'Publicado'
   else status
 end
-where status in ('Gravado', 'Postado');
+where status in ('Gravado', 'Em produção', 'Postado');
 
 alter table public.videos
 add constraint videos_status_check
 check (status in (
-  'Em produção',
+  'Em producao',
   'Editando',
   'Pronto',
   'Agendado',
@@ -141,7 +157,7 @@ create table if not exists public.video_statuses (
 
 insert into public.video_statuses (name, sort_order)
 values
-  ('Em produção', 1),
+  ('Em producao', 1),
   ('Editando', 2),
   ('Pronto', 3),
   ('Agendado', 4),
@@ -152,86 +168,87 @@ values
 on conflict (name) do update
 set sort_order = excluded.sort_order;
 
-alter table public.video_comments
-add column if not exists user_email text;
-
-create table if not exists public.video_publications (
+create table if not exists public.video_comments (
   id uuid primary key default gen_random_uuid(),
   video_id uuid not null references public.videos(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
-  platform text not null check (platform in (
-    'TikTok',
-    'Instagram',
-    'Facebook',
-    'YouTube',
-    'Shopee',
-    'Amazon',
-    'Outro'
-  )),
-  published_at timestamptz not null default now(),
-  created_at timestamptz not null default now(),
-  unique (video_id, platform)
+  user_email text,
+  comment text not null default '',
+  body text not null default '',
+  created_at timestamptz not null default now()
 );
 
-alter table public.video_publications enable row level security;
+alter table public.video_comments
+add column if not exists user_email text,
+add column if not exists comment text not null default '',
+add column if not exists body text not null default '';
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'video_publications'
-      and policyname = 'Users can read own video publications'
-  ) then
-    create policy "Users can read own video publications"
-    on public.video_publications for select
-    using (
-      exists (
-        select 1 from public.videos
-        where videos.id = video_publications.video_id
-          and videos.user_id = auth.uid()
-      )
-    );
-  end if;
-end $$;
+update public.video_comments
+set comment = body
+where comment = ''
+  and body <> '';
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'video_publications'
-      and policyname = 'Users can create own video publications'
-  ) then
-    create policy "Users can create own video publications"
-    on public.video_publications for insert
-    with check (
-      auth.uid() = user_id
-      and exists (
-        select 1 from public.videos
-        where videos.id = video_publications.video_id
-          and videos.user_id = auth.uid()
-      )
-    );
-  end if;
-end $$;
+update public.video_comments
+set body = comment
+where body = ''
+  and comment <> '';
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public'
-      and tablename = 'video_publications'
-      and policyname = 'Users can delete own video publications'
-  ) then
-    create policy "Users can delete own video publications"
-    on public.video_publications for delete
-    using (
-      exists (
-        select 1 from public.videos
-        where videos.id = video_publications.video_id
-          and videos.user_id = auth.uid()
-      )
-    );
-  end if;
-end $$;
+alter table public.video_comments enable row level security;
+
+drop policy if exists "Users can read comments from own videos" on public.video_comments;
+create policy "Users can read comments from own videos"
+on public.video_comments for select
+using (
+  exists (
+    select 1
+    from public.videos
+    where videos.id = video_comments.video_id
+      and videos.user_id = auth.uid()
+  )
+);
+
+drop policy if exists "Users can create comments on own videos" on public.video_comments;
+create policy "Users can create comments on own videos"
+on public.video_comments for insert
+with check (
+  auth.uid() = user_id
+  and exists (
+    select 1
+    from public.videos
+    where videos.id = video_comments.video_id
+      and videos.user_id = auth.uid()
+  )
+);
+
+drop policy if exists "Users can update comments on own videos" on public.video_comments;
+create policy "Users can update comments on own videos"
+on public.video_comments for update
+using (
+  exists (
+    select 1
+    from public.videos
+    where videos.id = video_comments.video_id
+      and videos.user_id = auth.uid()
+  )
+)
+with check (
+  auth.uid() = user_id
+  and exists (
+    select 1
+    from public.videos
+    where videos.id = video_comments.video_id
+      and videos.user_id = auth.uid()
+  )
+);
+
+drop policy if exists "Users can delete comments on own videos" on public.video_comments;
+create policy "Users can delete comments on own videos"
+on public.video_comments for delete
+using (
+  exists (
+    select 1
+    from public.videos
+    where videos.id = video_comments.video_id
+      and videos.user_id = auth.uid()
+  )
+);
