@@ -24,7 +24,7 @@ Arquivos principais:
 - `app/login/actions.ts`: Server Actions de login, cadastro e logout.
 - `app/(private)/layout.tsx`: layout das paginas privadas.
 - `app/(private)/dashboard/page.tsx`: dashboard privado.
-- `app/(private)/videos/page.tsx`: pagina para enviar arquivos de video e listar a biblioteca.
+- `app/(private)/videos/page.tsx`: pagina para criar e listar videos.
 - `app/(private)/videos/[id]/page.tsx`: pagina para editar video.
 - `app/(private)/videos/actions.ts`: Server Actions de videos.
 - `app/(private)/media/page.tsx`: Media Library inicial com arquivos enviados.
@@ -41,7 +41,7 @@ Arquivos principais:
 - `Button.tsx`: botao base.
 - `PageHeader.tsx`: cabecalho padrao de pagina.
 - `EmptyState.tsx`: estado vazio reutilizavel.
-- `VideoForm.tsx`: formulario de upload e detalhes opcionais de videos.
+- `VideoForm.tsx`: formulario de criacao e edicao de videos.
 - `VideoList.tsx`: lista de videos.
 - `ProjectManager.tsx`: cria, edita e exclui Nichos/Projects.
 - `AccountManager.tsx`: cria, edita, lista e inativa contas por plataforma.
@@ -120,18 +120,18 @@ Padrao recomendado:
 
 ## Fluxo De Videos E Media
 
-- Videos: `/videos` e responsavel por enviar, listar e editar videos originais.
+- Videos: `/videos` e responsavel pelos registros de conteudo.
 - Nichos na interface sao Projects no banco e no codigo.
 - Media Library: `/media` e responsavel por videos, fotos e arquivos originais.
 - Projects: `/videos` mostra `ProjectManager` para criar, editar e excluir Nichos.
 - Contas: `/videos` mostra `AccountManager` para gerenciar contas reais.
-- Envio de video: `/videos` usa `VideoForm` com `createVideo`.
+- Criacao de registro: `/videos` usa `VideoForm` com `createVideo`.
 - Listagem de registros: `/videos` usa `VideoList`.
 - Edicao: `/videos/[id]` usa `VideoForm` com `updateVideo`.
 - Comentarios: `/videos/[id]` usa `VideoComments`.
 - Publicado em: `/videos/[id]` usa `VideoPublications` para registrar conta, status, link, metricas e observacoes.
 - Exclusao: `DeleteVideoButton` chama `deleteVideo`.
-- Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho privado em `storage_path`.
+- Upload: `VideoForm` envia o arquivo original ao Supabase Storage e salva o caminho privado em `storage_path` e `file_url`.
 - Download: `DownloadFileButton` cria uma URL assinada temporaria para baixar o arquivo original.
 - Media Library: `/media` salva arquivos em `media_assets` e reaproveita o download seguro.
 - Dados persistem na tabela `videos`.
@@ -142,8 +142,8 @@ Padrao recomendado:
 2. Clica em "Novo Nicho".
 3. O modal cria um registro em `projects`.
 4. A tela e atualizada com `router.refresh`, sem recarregar a pagina inteira.
-5. Ao enviar ou editar video, o usuario pode selecionar um Nicho, mas isso e opcional.
-6. Internamente, o video salva `project_id` e mantem `niche` como espelho de compatibilidade quando houver Nicho.
+5. Ao criar ou editar video, o usuario seleciona um Nicho.
+6. Internamente, o video salva `project_id` e mantem `niche` como espelho de compatibilidade.
 7. Um Project so pode ser excluido quando nao houver videos vinculados.
 
 ## Fluxo De Comentarios E Publicacoes
@@ -163,14 +163,13 @@ Upload:
 1. Usuario autenticado seleciona um arquivo em `VideoForm` ou `MediaUploadForm`.
 2. O app valida extensao e tipo permitido.
 3. O arquivo original e enviado ao bucket privado `videos`.
-4. O caminho privado e salvo em `videos.storage_path`.
+4. O caminho privado e salvo em `videos.file_url` e `videos.storage_path`.
 5. Metadados sao salvos no registro: nome original, tamanho, MIME e data.
 6. A interface mostra feedback de envio, erro ou sucesso.
-7. Em `/videos`, titulo, Nicho/Project, plataforma, status, conta e postagens podem ficar vazios no upload inicial.
 
 Download:
 
-1. Usuario autenticado clica em `Baixar original`.
+1. Usuario autenticado clica em `Baixar video`.
 2. `DownloadFileButton` pede uma URL assinada temporaria ao Supabase.
 3. O navegador baixa o arquivo original usando a URL assinada.
 4. O arquivo nao e comprimido, convertido ou modificado.

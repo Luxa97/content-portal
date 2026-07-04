@@ -2,14 +2,6 @@
 
 Historico relevante do Content Portal, organizado por data e versao.
 
-## 2026-07-04 - v0.6.1 - Upload de video como fluxo principal
-
-- Ajustado `/videos` para tratar video como arquivo original armazenado.
-- Upload do arquivo passou a ser a acao principal, com titulo, Nicho/Project, plataforma, status e demais metadados opcionais.
-- Novos registros usam `storage_path` como caminho privado principal no Supabase Storage.
-- Removida a gravacao de `file_url` em novos cadastros para evitar erro de schema cache em producao.
-- Criada migration `supabase/video-upload-first-flow-migration.sql`.
-
 ## 2026-07-04 - v0.6.0 - Contas e historico de postagens
 
 - Criada entidade `accounts` para contas reais por plataforma.

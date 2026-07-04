@@ -49,7 +49,7 @@ export default async function EditVideoPage({
 
       <PageHeader
         title="Editar video"
-        description="Atualize detalhes opcionais ou troque o arquivo original."
+        description="Atualize as informacoes principais deste conteudo."
       />
 
       <div className="grid gap-6">

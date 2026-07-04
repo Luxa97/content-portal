@@ -141,7 +141,7 @@ export async function deleteProject(id: string) {
 }
 
 export async function createVideo(formData: FormData) {
-  const typedTitle = String(formData.get("title") ?? "").trim();
+  const title = String(formData.get("title") ?? "");
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
   const status = String(formData.get("status") ?? "Em produção");
@@ -150,50 +150,43 @@ export async function createVideo(formData: FormData) {
   const hook = String(formData.get("hook") ?? "");
   const productLink = String(formData.get("product_link") ?? "");
   const notes = String(formData.get("notes") ?? "");
-  const storagePath = String(formData.get("storage_path") ?? "");
+  const fileUrl = String(formData.get("file_url") ?? "");
   const originalFilename = String(formData.get("original_filename") ?? "");
   const fileSize = Number(formData.get("file_size") ?? 0);
   const mimeType = String(formData.get("mime_type") ?? "");
   const uploadedAt = String(formData.get("uploaded_at") ?? "");
   const { supabase, user } = await getUser();
 
-  if (!user) {
+  if (!user || !title || !projectId || !platform) {
     return;
   }
 
-  if (!storagePath) {
-    redirect(
-      `/videos?message=${encodeURIComponent("Escolha um arquivo de video para enviar.")}`
-    );
+  const niche = await getProjectName(projectId, user.id);
+
+  if (!niche) {
+    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
   }
 
-  if (!isValidPrivateStoragePath(storagePath, user.id)) {
+  if (!isValidPrivateStoragePath(fileUrl, user.id)) {
     redirect(
       `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
     );
   }
 
-  const niche = projectId ? await getProjectName(projectId, user.id) : "";
-
-  if (projectId && !niche) {
-    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
-  }
-
-  const title = typedTitle || originalFilename || "Video sem titulo";
-
   const { error } = await supabase.from("videos").insert({
     user_id: user.id,
-    project_id: projectId || null,
+    project_id: projectId,
     title,
-    niche: niche || null,
-    platform: platform || null,
-    status: String(formData.get("status") ?? "") || null,
-    responsible: responsible || null,
-    video_type: videoType || null,
-    hook: hook || null,
-    product_link: productLink || null,
-    notes: notes || null,
-    storage_path: storagePath,
+    niche,
+    platform,
+    status,
+    responsible,
+    video_type: videoType,
+    hook,
+    product_link: productLink,
+    notes,
+    file_url: fileUrl,
+    storage_path: fileUrl || null,
     original_filename: originalFilename || null,
     file_size: fileSize > 0 ? fileSize : null,
     mime_type: mimeType || null,
@@ -205,12 +198,12 @@ export async function createVideo(formData: FormData) {
   }
 
   revalidatePath("/videos");
-  redirect(`/videos?success=${encodeURIComponent("Video enviado com sucesso.")}`);
+  redirect(`/videos?success=${encodeURIComponent("Video criado com sucesso.")}`);
 }
 
 export async function updateVideo(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const typedTitle = String(formData.get("title") ?? "").trim();
+  const title = String(formData.get("title") ?? "");
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
   const status = String(formData.get("status") ?? "Em produção");
@@ -219,50 +212,48 @@ export async function updateVideo(formData: FormData) {
   const hook = String(formData.get("hook") ?? "");
   const productLink = String(formData.get("product_link") ?? "");
   const notes = String(formData.get("notes") ?? "");
-  const storagePath = String(formData.get("storage_path") ?? "");
+  const fileUrl = String(formData.get("file_url") ?? "");
   const originalFilename = String(formData.get("original_filename") ?? "");
   const fileSize = Number(formData.get("file_size") ?? 0);
   const mimeType = String(formData.get("mime_type") ?? "");
   const uploadedAt = String(formData.get("uploaded_at") ?? "");
   const { supabase, user } = await getUser();
 
-  if (!user || !id) {
+  if (!user || !id || !title || !projectId || !platform) {
     return;
   }
 
-  if (!isValidPrivateStoragePath(storagePath, user.id)) {
+  const niche = await getProjectName(projectId, user.id);
+
+  if (!niche) {
+    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
+  }
+
+  if (!isValidPrivateStoragePath(fileUrl, user.id)) {
     redirect(
       `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
     );
   }
 
-  const niche = projectId ? await getProjectName(projectId, user.id) : "";
-
-  if (projectId && !niche) {
-    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
-  }
-
-  const title = typedTitle || originalFilename || "Video sem titulo";
-
   const { error } = await supabase
     .from("videos")
     .update({
-      project_id: projectId || null,
+      project_id: projectId,
       title,
-      niche: niche || null,
-      platform: platform || null,
-      status: String(formData.get("status") ?? "") || null,
-      responsible: responsible || null,
-      video_type: videoType || null,
-      hook: hook || null,
-      product_link: productLink || null,
-      notes: notes || null,
-      storage_path: storagePath || null,
+      niche,
+      platform,
+      status,
+      responsible,
+      video_type: videoType,
+      hook,
+      product_link: productLink,
+      notes,
+      file_url: fileUrl,
+      storage_path: fileUrl || null,
       original_filename: originalFilename || null,
       file_size: fileSize > 0 ? fileSize : null,
       mime_type: mimeType || null,
-      uploaded_at: uploadedAt || null,
-      updated_at: new Date().toISOString()
+      uploaded_at: uploadedAt || null
     })
     .eq("id", id)
     .eq("user_id", user.id);
@@ -272,7 +263,7 @@ export async function updateVideo(formData: FormData) {
   }
 
   revalidatePath("/videos");
-  redirect(`/videos?success=${encodeURIComponent("Detalhes do video atualizados.")}`);
+  redirect(`/videos?success=${encodeURIComponent("Video atualizado com sucesso.")}`);
 }
 
 export async function deleteVideo(id: string) {

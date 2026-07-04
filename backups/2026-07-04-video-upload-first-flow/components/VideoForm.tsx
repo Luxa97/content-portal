@@ -27,9 +27,7 @@ export function VideoForm({
   submitLabel = "Salvar video"
 }: VideoFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [storagePath, setStoragePath] = useState(
-    video?.storage_path ?? video?.file_url ?? ""
-  );
+  const [fileUrl, setFileUrl] = useState(video?.storage_path ?? video?.file_url ?? "");
   const [originalFilename, setOriginalFilename] = useState(
     video?.original_filename ?? ""
   );
@@ -67,11 +65,11 @@ export function VideoForm({
     }
 
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-    const nextStoragePath = `${user.id}/${Date.now()}-${safeName}`;
+    const storagePath = `${user.id}/${Date.now()}-${safeName}`;
 
     const { error } = await supabase.storage
       .from("videos")
-      .upload(nextStoragePath, file, {
+      .upload(storagePath, file, {
         cacheControl: "3600",
         upsert: false
       });
@@ -81,7 +79,7 @@ export function VideoForm({
     }
 
     return {
-      storagePath: nextStoragePath,
+      storagePath,
       originalFilename: file.name,
       fileSize: file.size.toString(),
       mimeType: file.type || "video/unknown",
@@ -100,8 +98,7 @@ export function VideoForm({
 
     const formData = new FormData(form);
     const file = formData.get("video_file") as File | null;
-    const isNewVideo = !video;
-    let nextStoragePath = storagePath;
+    let nextFileUrl = fileUrl;
     let nextOriginalFilename = originalFilename;
     let nextFileSize = fileSize;
     let nextMimeType = mimeType;
@@ -110,26 +107,21 @@ export function VideoForm({
     setUploadError("");
     setUploadSuccess("");
 
-    if (isNewVideo && (!file || file.size === 0)) {
-      setUploadError("Escolha um arquivo de video para enviar.");
-      return;
-    }
-
     if (file && file.size > 0) {
       try {
         setIsUploading(true);
         const uploadedFile = await uploadVideoFile(file);
-        nextStoragePath = uploadedFile.storagePath;
+        nextFileUrl = uploadedFile.storagePath;
         nextOriginalFilename = uploadedFile.originalFilename;
         nextFileSize = uploadedFile.fileSize;
         nextMimeType = uploadedFile.mimeType;
         nextUploadedAt = uploadedFile.uploadedAt;
-        setStoragePath(uploadedFile.storagePath);
+        setFileUrl(uploadedFile.storagePath);
         setOriginalFilename(uploadedFile.originalFilename);
         setFileSize(uploadedFile.fileSize);
         setMimeType(uploadedFile.mimeType);
         setUploadedAt(uploadedFile.uploadedAt);
-        setUploadSuccess("Upload concluido. Salvando registro...");
+        setUploadSuccess("Video enviado com sucesso.");
       } catch (error) {
         setUploadError(
           error instanceof Error ? error.message : "Nao foi possivel enviar o video."
@@ -140,7 +132,7 @@ export function VideoForm({
     }
 
     setIsUploading(false);
-    formData.set("storage_path", nextStoragePath);
+    formData.set("file_url", nextFileUrl);
     formData.set("original_filename", nextOriginalFilename);
     formData.set("file_size", nextFileSize);
     formData.set("mime_type", nextMimeType);
@@ -155,30 +147,162 @@ export function VideoForm({
       className="grid gap-4 rounded-md border border-line bg-white p-5"
     >
       {video ? <input type="hidden" name="id" value={video.id} /> : null}
-      <input type="hidden" name="storage_path" value={storagePath} />
       <input type="hidden" name="original_filename" value={originalFilename} />
       <input type="hidden" name="file_size" value={fileSize} />
       <input type="hidden" name="mime_type" value={mimeType} />
       <input type="hidden" name="uploaded_at" value={uploadedAt} />
 
+      {!projects.length ? (
+        <div className="rounded-md bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+          Crie um nicho antes de cadastrar videos.
+        </div>
+      ) : null}
+
+      <label className="block text-sm font-medium text-gray-700">
+        Titulo
+        <input
+          name="title"
+          required
+          defaultValue={video?.title ?? ""}
+          placeholder="Ex: 3 erros ao tomar creatina"
+          className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+        />
+      </label>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <label className="block text-sm font-medium text-gray-700">
+          Nicho
+          <select
+            name="project_id"
+            required
+            defaultValue={video?.project_id ?? projects[0]?.id ?? ""}
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          >
+            {!projects.length ? (
+              <option value="">Crie um nicho primeiro</option>
+            ) : null}
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block text-sm font-medium text-gray-700">
+          Plataforma
+          <select
+            name="platform"
+            defaultValue={video?.platform ?? platforms[0]}
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          >
+            {platforms.map((platform) => (
+              <option key={platform} value={platform}>
+                {platform}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block text-sm font-medium text-gray-700">
+          Status
+          <select
+            name="status"
+            defaultValue={video?.status ?? statuses[0]}
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          >
+            {statuses.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Responsavel
+          <select
+            name="responsible"
+            defaultValue={video?.responsible ?? responsibles[0]}
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          >
+            {responsibles.map((responsible) => (
+              <option key={responsible} value={responsible}>
+                {responsible}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block text-sm font-medium text-gray-700">
+          Tipo de video
+          <select
+            name="video_type"
+            defaultValue={video?.video_type ?? videoTypes[0]}
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          >
+            {videoTypes.map((videoType) => (
+              <option key={videoType} value={videoType}>
+                {videoType}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <label className="block text-sm font-medium text-gray-700">
+        Hook
+        <input
+          name="hook"
+          defaultValue={video?.hook ?? ""}
+          placeholder="Primeira frase do video"
+          className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+        />
+      </label>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Link do produto
+          <input
+            name="product_link"
+            type="url"
+            defaultValue={video?.product_link ?? ""}
+            placeholder="https://..."
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          />
+        </label>
+
+        <label className="block text-sm font-medium text-gray-700">
+          Arquivo salvo
+          <input
+            name="file_url"
+            value={fileUrl}
+            readOnly
+            placeholder="Preenchido automaticamente apos upload"
+            className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
+          />
+        </label>
+      </div>
+
       <div className="rounded-md border border-line bg-mist p-4">
         <label className="block text-sm font-medium text-gray-700">
-          Arquivo de video {video ? "(opcional para trocar)" : ""}
+          Upload do video original
           <input
             name="video_file"
             type="file"
-            required={!video}
             accept="video/mp4,video/quicktime,video/x-m4v,video/webm,.mp4,.mov,.m4v,.webm"
             className="mt-2 block w-full text-sm text-gray-700 file:mr-3 file:h-10 file:rounded-md file:border-0 file:bg-white file:px-3 file:text-sm file:font-medium"
           />
         </label>
         <p className="mt-2 text-xs text-gray-600">
-          Formatos aceitos: mp4, mov, m4v e webm. O arquivo original sera salvo
-          sem compressao, conversao ou reducao de qualidade.
+          Formatos aceitos: mp4, mov, m4v e webm. Recomendado: ate 500 MB por
+          arquivo, conforme o limite configurado no Supabase.
         </p>
         <p className="mt-1 text-xs text-gray-600">
-          Tamanho recomendado: ate 500 MB por arquivo, conforme o limite
-          configurado no Supabase.
+          O arquivo original sera salvo sem compressao, conversao ou reducao de
+          qualidade.
         </p>
         {isUploading ? (
           <p className="mt-2 text-sm font-medium text-ink">Enviando video...</p>
@@ -197,140 +321,19 @@ export function VideoForm({
             {fileSize ? ` (${(Number(fileSize) / 1024 / 1024).toFixed(1)} MB)` : ""}
           </p>
         ) : null}
-        {storagePath ? (
+        {fileUrl ? (
           <div className="mt-3">
             <DownloadFileButton
-              fileUrl={storagePath}
+              fileUrl={fileUrl}
               originalFilename={originalFilename}
-              label="Baixar original"
+              label="Baixar video"
             />
           </div>
         ) : null}
       </div>
 
       <label className="block text-sm font-medium text-gray-700">
-        Titulo opcional
-        <input
-          name="title"
-          defaultValue={video?.title ?? ""}
-          placeholder="Se ficar vazio, usaremos o nome do arquivo"
-          className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-        />
-      </label>
-
-      <label className="block text-sm font-medium text-gray-700">
-        Nicho opcional
-        <select
-          name="project_id"
-          defaultValue={video?.project_id ?? ""}
-          className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-        >
-          <option value="">Sem nicho por enquanto</option>
-          {projects.map((project) => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <details className="rounded-md border border-line p-4">
-        <summary className="cursor-pointer text-sm font-medium text-ink">
-          Detalhes opcionais
-        </summary>
-
-        <div className="mt-4 grid gap-4">
-          <div className="grid gap-4 md:grid-cols-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Plataforma
-              <select
-                name="platform"
-                defaultValue={video?.platform ?? ""}
-                className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-              >
-                <option value="">Sem plataforma</option>
-                {platforms.map((platform) => (
-                  <option key={platform} value={platform}>
-                    {platform}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block text-sm font-medium text-gray-700">
-              Status
-              <select
-                name="status"
-                defaultValue={video?.status ?? ""}
-                className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-              >
-                <option value="">Sem status</option>
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block text-sm font-medium text-gray-700">
-              Responsavel
-              <select
-                name="responsible"
-                defaultValue={video?.responsible ?? ""}
-                className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-              >
-                <option value="">Sem responsavel</option>
-                {responsibles.map((responsible) => (
-                  <option key={responsible} value={responsible}>
-                    {responsible}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <label className="block text-sm font-medium text-gray-700">
-            Tipo de video
-            <select
-              name="video_type"
-              defaultValue={video?.video_type ?? ""}
-              className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-            >
-              <option value="">Sem tipo</option>
-              {videoTypes.map((videoType) => (
-                <option key={videoType} value={videoType}>
-                  {videoType}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block text-sm font-medium text-gray-700">
-            Hook
-            <input
-              name="hook"
-              defaultValue={video?.hook ?? ""}
-              placeholder="Primeira frase do video"
-              className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-            />
-          </label>
-
-          <label className="block text-sm font-medium text-gray-700">
-            Link do produto
-            <input
-              name="product_link"
-              type="url"
-              defaultValue={video?.product_link ?? ""}
-              placeholder="https://..."
-              className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
-            />
-          </label>
-        </div>
-      </details>
-
-      <label className="block text-sm font-medium text-gray-700">
-        Observacoes opcionais
+        Observacoes
         <textarea
           name="notes"
           defaultValue={video?.notes ?? ""}
@@ -339,7 +342,7 @@ export function VideoForm({
         />
       </label>
 
-      <Button className="w-fit gap-2" disabled={isUploading}>
+      <Button className="w-fit gap-2" disabled={isUploading || !projects.length}>
         <Save size={16} />
         {isUploading ? "Enviando..." : submitLabel}
       </Button>

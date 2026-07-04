@@ -15,7 +15,7 @@ function formatFileSize(size: number | null) {
 
 export function VideoList({ videos }: { videos: Video[] }) {
   if (!videos.length) {
-    return <EmptyState text="Envie seu primeiro video para comecar." />;
+    return <EmptyState text="Cadastre seu primeiro video para comecar." />;
   }
 
   return (
@@ -32,11 +32,9 @@ export function VideoList({ videos }: { videos: Video[] }) {
 
       <div className="divide-y divide-line">
         {videos.map((video) => {
-          const filePath = video.storage_path ?? video.file_url ?? "";
+          const filePath = video.storage_path ?? video.file_url;
           const fileSize = formatFileSize(video.file_size);
-          const projectName = video.projects?.name ?? video.niche ?? "-";
-          const title = video.title || video.original_filename || "Video sem titulo";
-          const uploadDate = video.uploaded_at ?? video.created_at;
+          const projectName = video.projects?.name ?? video.niche;
           const publications = video.video_publications ?? [];
           const comments = [...(video.video_comments ?? [])]
             .sort(
@@ -55,7 +53,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
                   Sem thumbnail
                 </div>
                 <div>
-                  <h2 className="font-medium text-ink">{title}</h2>
+                  <h2 className="font-medium text-ink">{video.title}</h2>
                   {video.hook ? (
                     <p className="mt-1 line-clamp-1 text-sm text-gray-500">
                       {video.hook}
@@ -72,7 +70,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
 
               <p className="text-sm text-gray-700">{projectName}</p>
               <span className="w-fit rounded-md bg-mist px-2 py-1 text-xs font-medium text-gray-700">
-                {video.status ?? "-"}
+                {video.status}
               </span>
               <p className="text-sm text-gray-700">
                 {publications.length
@@ -98,7 +96,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
                 )}
               </div>
               <p className="text-sm text-gray-600">
-                {new Date(uploadDate).toLocaleDateString("pt-BR")}
+                {new Date(video.created_at).toLocaleDateString("pt-BR")}
               </p>
 
               <div className="flex flex-wrap gap-2">
@@ -106,7 +104,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
                   <DownloadFileButton
                     fileUrl={filePath}
                     originalFilename={video.original_filename}
-                    label="Baixar original"
+                    label="Baixar video"
                   />
                 ) : null}
                 <Link
@@ -114,7 +112,7 @@ export function VideoList({ videos }: { videos: Video[] }) {
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-medium text-ink transition hover:bg-mist"
                 >
                   <Edit size={15} />
-                  Editar detalhes
+                  Editar
                 </Link>
                 <DeleteVideoButton videoId={video.id} />
               </div>

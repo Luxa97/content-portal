@@ -5,7 +5,7 @@
 O Content Portal e um portal privado para organizar a producao de conteudo de
 Lucas e Larissa para canais de social commerce.
 
-O sistema centraliza arquivos de video, ideias, classificacoes, hooks, links e status para
+O sistema centraliza ideias, videos, classificacoes, hooks, links e status para
 reduzir perda de informacao e facilitar a rotina de publicacao.
 
 ## Visao Do Produto
@@ -67,13 +67,13 @@ fonte principal do sistema.
 - Login com Supabase Auth.
 - Cadastro restrito por e-mails autorizados.
 - Dashboard privado.
-- Upload e organizacao de videos originais.
+- CRUD de videos.
 - Classificacao por Nicho/Project criado pelo usuario.
 - Classificacao por plataforma.
 - Classificacao por status.
 - Classificacao por responsavel.
 - Classificacao por tipo de video.
-- Campos editoriais opcionais para hook, link do produto e observacoes.
+- Campos editoriais para hook, link do produto, observacoes e link do arquivo.
 - Upload do arquivo original de video sem compressao.
 - Download do arquivo original por usuario autenticado.
 - Media Library inicial para enviar, listar e baixar videos, fotos e arquivos.
@@ -138,13 +138,13 @@ fonte principal do sistema.
 1. Usuario autorizado acessa o portal.
 2. Faz login com Supabase Auth.
 3. Entra no dashboard privado.
-4. Envia o arquivo original do video em `/videos`.
-5. Se quiser, adiciona titulo, Nicho/Project e observacoes.
-6. Depois, pode preencher plataforma, status, responsavel, tipo, hook e link do produto.
+4. Cadastra um novo video em `/videos`.
+5. Define Nicho/Project, plataforma, status, responsavel e tipo.
+6. Adiciona hook, link do produto, observacoes e link do arquivo.
 7. Registra comentarios internos sem apagar historico.
 8. Marca onde o video foi publicado, escolhendo uma conta real.
-9. Atualiza status, postagens e metricas conforme a rotina avanca.
-10. Consulta dashboard e lista para acompanhar a biblioteca e o pipeline.
+9. Atualiza o status conforme a producao avanca.
+10. Consulta dashboard e lista para acompanhar o pipeline.
 
 ## Modulos Futuros
 

@@ -17,31 +17,23 @@ create table public.videos (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   project_id uuid references public.projects(id) on delete restrict,
-  title text,
-  niche text,
-  platform text check (platform is null or platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
+  title text not null,
+  niche text not null,
+  platform text not null check (platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
   status text not null default 'Em produção' check (status in ('Em produção', 'Editando', 'Pronto', 'Agendado', 'Publicado', 'Bloqueado', 'Reprovado', 'Arquivado')),
   responsible text not null default 'Lucas' check (responsible in ('Lucas', 'Larissa')),
   video_type text not null default 'Review' check (video_type in ('Review', 'Oferta', 'Comparação', 'Rotina', 'Unboxing', 'Demonstração', 'Referência viral', 'Outro')),
   hook text,
   product_link text,
   notes text,
+  file_url text,
   storage_path text,
   original_filename text,
   file_size bigint,
   mime_type text,
   uploaded_at timestamptz,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  created_at timestamptz not null default now()
 );
-
-alter table public.videos
-alter column status drop not null,
-alter column status drop default,
-alter column responsible drop not null,
-alter column responsible drop default,
-alter column video_type drop not null,
-alter column video_type drop default;
 
 create table public.accounts (
   id uuid primary key default gen_random_uuid(),

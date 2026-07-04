@@ -60,30 +60,29 @@ Campos:
 
 ### `public.videos`
 
-Tabela principal dos videos enviados. No fluxo atual, Video significa o arquivo
-de midia original armazenado no Storage; metadados editoriais sao opcionais.
+Tabela principal dos videos planejados ou produzidos.
 
 Campos principais:
 
 - `id`: identificador unico.
 - `user_id`: usuario dono do video.
-- `project_id`: Project/Nicho opcional ao qual o video pertence.
-- `title`: titulo opcional. Quando vazio no upload, o app usa o nome original do arquivo.
-- `niche`: espelho opcional do nome do Project, mantido por compatibilidade.
-- `platform`: plataforma principal opcional.
-- `status`: etapa opcional do fluxo.
-- `responsible`: responsavel opcional.
-- `video_type`: tipo de video opcional.
-- `hook`: frase inicial opcional.
-- `product_link`: link do produto opcional.
-- `notes`: observacoes opcionais.
+- `project_id`: Project/Nicho ao qual o video pertence.
+- `title`: titulo do video.
+- `niche`: espelho do nome do Project, mantido por compatibilidade.
+- `platform`: plataforma principal.
+- `status`: etapa atual do fluxo.
+- `responsible`: responsavel.
+- `video_type`: tipo de video.
+- `hook`: frase inicial.
+- `product_link`: link do produto.
+- `notes`: observacoes.
+- `file_url`: caminho privado legado do arquivo no Storage.
 - `storage_path`: caminho privado principal do arquivo no Storage.
 - `original_filename`: nome original do arquivo.
 - `file_size`: tamanho em bytes.
 - `mime_type`: tipo MIME.
 - `uploaded_at`: data do upload.
 - `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
 
 Status atuais:
 
@@ -197,8 +196,8 @@ Regras principais:
 O bucket `videos` permanece privado.
 
 O app salva o arquivo original sem compressao, conversao ou reducao de qualidade.
-O valor salvo em `videos.storage_path` ou `media_assets.storage_path` e o
-caminho privado dentro do bucket.
+O valor salvo em `videos.storage_path`, `videos.file_url` ou
+`media_assets.storage_path` e o caminho privado dentro do bucket.
 
 Downloads usam URLs assinadas temporarias para usuarios autenticados.
 
@@ -214,7 +213,6 @@ Arquivos atuais:
 - `supabase/media-assets-migration.sql`: tabela `media_assets`.
 - `supabase/projects-video-workflow-migration.sql`: Projects, vinculo video -> Project, novos status e comentarios internos.
 - `supabase/accounts-video-publications-migration.sql`: contas reais e historico manual de postagens por conta.
-- `supabase/video-upload-first-flow-migration.sql`: torna o upload do arquivo original o fluxo principal de `/videos` e deixa metadados opcionais.
 
 Ordem recomendada para producao:
 
@@ -239,7 +237,7 @@ apagar dados.
 
 ## Estado Atual Dos Uploads
 
-- Upload de video em `/videos`: habilitado para mp4, mov, m4v e webm. O arquivo e obrigatorio no envio inicial; titulo, Nicho/Project, plataforma, status, conta e publicacao sao opcionais.
+- Upload de video em `/videos`: habilitado para mp4, mov, m4v e webm.
 - Download do video original: habilitado por URL assinada temporaria.
 - Upload de imagem em `/media`: habilitado.
 - Upload de arquivo/documento em `/media`: habilitado para formatos comuns como pdf, txt, csv, doc, docx, xls, xlsx, ppt, pptx e zip.

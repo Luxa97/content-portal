@@ -22,7 +22,7 @@ Status usados:
 - Concluido: Portal privado com rotas protegidas.
 - Concluido: Cadastro restrito por e-mails autorizados.
 - Concluido: Dashboard inicial.
-- Concluido: Upload e organizacao de videos originais.
+- Concluido: CRUD de videos.
 - Concluido: Classificacao por nicho.
 - Concluido: Nichos dinamicos usando Projects.
 - Concluido: Classificacao por plataforma.
@@ -41,7 +41,7 @@ Status usados:
 
 ## Organizacao De Conteudo
 
-- Concluido: Campos editoriais opcionais para hook, link do produto e observacoes.
+- Concluido: Campos editoriais para hook, link do produto, observacoes e link do arquivo.
 - Concluido: Upload real de video no Supabase Storage.
 - Concluido: Listagem inicial de arquivos enviados.
 - Em andamento: Melhorar documentacao e memoria do projeto.

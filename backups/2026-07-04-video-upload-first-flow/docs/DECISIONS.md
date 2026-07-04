@@ -102,28 +102,10 @@ usuarios autenticados.
 Consequencias:
 
 - O app nao comprime, converte ou modifica o arquivo enviado.
-- `videos.storage_path` e `media_assets.storage_path` armazenam caminhos privados no bucket.
+- `videos.file_url` e `media_assets.storage_path` armazenam caminhos privados no bucket.
 - Metadados do arquivo original sao salvos no registro relacionado.
 - Downloads usam URLs assinadas temporarias.
 - O bucket nao deve ser publico sem nova decisao documentada.
-
-## ADR-015 - Video primeiro como arquivo original
-
-Data: 2026-07-04
-
-Decisao: em `/videos`, o fluxo principal passa a ser enviar o arquivo original
-do video. Titulo, Nicho/Project, plataforma, status, contas, postagens e demais
-metadados sao opcionais e podem ser preenchidos depois.
-
-Motivo: o uso principal atual e armazenar e recuperar os arquivos originais sem
-perda de qualidade. O planejamento editorial nao deve bloquear o upload.
-
-Consequencias:
-
-- O arquivo de video e obrigatorio apenas no envio inicial.
-- Se o titulo ficar vazio, o app usa o nome original do arquivo.
-- O banco usa `videos.storage_path` como caminho privado principal.
-- O app nao depende de URLs publicas nem de `file_url` para novos registros.
 
 ## ADR-012 - Vercel nao processa videos pesados
 

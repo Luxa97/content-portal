@@ -110,15 +110,15 @@ export default async function VideosPage({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <PageHeader
           title="Videos"
-          description="Envie arquivos originais e organize detalhes depois, se quiser."
+          description="Crie, edite e acompanhe registros de conteudo."
         />
 
         <Link
-          href="#enviar-video"
+          href="#novo-video"
           className="inline-flex h-10 w-fit items-center justify-center gap-2 rounded-md bg-ink px-4 text-sm font-medium text-white hover:bg-black"
         >
           <Plus size={16} />
-          Enviar video
+          Novo video
         </Link>
       </div>
 
@@ -135,17 +135,17 @@ export default async function VideosPage({
       ) : null}
 
       <div className="grid gap-6">
-        <section id="enviar-video">
-          <h2 className="mb-3 font-semibold text-ink">Enviar video</h2>
+        <ProjectManager projects={projectList} videoCounts={videoCounts} />
+        <AccountManager accounts={accountList} projects={projectList} />
+
+        <section id="novo-video">
+          <h2 className="mb-3 font-semibold text-ink">Novo video</h2>
           <VideoForm
             action={createVideo}
             projects={projectList}
-            submitLabel="Enviar video"
+            submitLabel="Criar video"
           />
         </section>
-
-        <ProjectManager projects={projectList} videoCounts={videoCounts} />
-        <AccountManager accounts={accountList} projects={projectList} />
 
         <section className="rounded-md border border-line bg-white p-5">
           <h2 className="font-semibold text-ink">Filtros</h2>
