@@ -1,0 +1,510 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+function isValidPrivateStoragePath(path: string, userId: string) {
+  return !path || (!path.startsWith("http") && path.startsWith(`${userId}/`));
+}
+
+function optionalNumber(value: FormDataEntryValue | null) {
+  const numberValue = Number(value ?? "");
+  return Number.isFinite(numberValue) && numberValue >= 0 ? numberValue : null;
+}
+
+async function getUser() {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  return { supabase, user };
+}
+
+async function getProjectName(projectId: string, userId: string) {
+  const supabase = await createClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("name")
+    .eq("id", projectId)
+    .eq("user_id", userId)
+    .single();
+
+  return project?.name ?? "";
+}
+
+export async function createProject(formData: FormData) {
+  const name = String(formData.get("name") ?? "").trim();
+  const color = String(formData.get("color") ?? "").trim();
+  const icon = String(formData.get("icon") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user) {
+    return { error: "Voce precisa estar logado." };
+  }
+
+  if (!name) {
+    return { error: "Informe o nome do nicho." };
+  }
+
+  const { error } = await supabase.from("projects").insert({
+    user_id: user.id,
+    name,
+    color: color || null,
+    icon: icon || null,
+    description: description || null
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/videos");
+  revalidatePath("/dashboard");
+  return { error: null };
+}
+
+export async function updateProject(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const color = String(formData.get("color") ?? "").trim();
+  const icon = String(formData.get("icon") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user || !id) {
+    return { error: "Nicho nao encontrado." };
+  }
+
+  if (!name) {
+    return { error: "Informe o nome do nicho." };
+  }
+
+  const { error } = await supabase
+    .from("projects")
+    .update({
+      name,
+      color: color || null,
+      icon: icon || null,
+      description: description || null
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  await supabase
+    .from("videos")
+    .update({ niche: name })
+    .eq("project_id", id)
+    .eq("user_id", user.id);
+
+  revalidatePath("/videos");
+  revalidatePath("/dashboard");
+  return { error: null };
+}
+
+export async function deleteProject(id: string) {
+  const { supabase, user } = await getUser();
+
+  if (!user || !id) {
+    return { error: "Nicho nao encontrado." };
+  }
+
+  const { count } = await supabase
+    .from("videos")
+    .select("id", { count: "exact", head: true })
+    .eq("project_id", id)
+    .eq("user_id", user.id);
+
+  if ((count ?? 0) > 0) {
+    return { error: "Nao e possivel excluir um nicho com videos vinculados." };
+  }
+
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/videos");
+  revalidatePath("/dashboard");
+  return { error: null };
+}
+
+export async function createVideo(formData: FormData) {
+  const title = String(formData.get("title") ?? "");
+  const projectId = String(formData.get("project_id") ?? "");
+  const platform = String(formData.get("platform") ?? "");
+  const status = String(formData.get("status") ?? "Em produção");
+  const responsible = String(formData.get("responsible") ?? "");
+  const videoType = String(formData.get("video_type") ?? "");
+  const hook = String(formData.get("hook") ?? "");
+  const productLink = String(formData.get("product_link") ?? "");
+  const notes = String(formData.get("notes") ?? "");
+  const fileUrl = String(formData.get("file_url") ?? "");
+  const originalFilename = String(formData.get("original_filename") ?? "");
+  const fileSize = Number(formData.get("file_size") ?? 0);
+  const mimeType = String(formData.get("mime_type") ?? "");
+  const uploadedAt = String(formData.get("uploaded_at") ?? "");
+  const { supabase, user } = await getUser();
+
+  if (!user || !title || !projectId || !platform) {
+    return;
+  }
+
+  const niche = await getProjectName(projectId, user.id);
+
+  if (!niche) {
+    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
+  }
+
+  if (!isValidPrivateStoragePath(fileUrl, user.id)) {
+    redirect(
+      `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
+    );
+  }
+
+  const { error } = await supabase.from("videos").insert({
+    user_id: user.id,
+    project_id: projectId,
+    title,
+    niche,
+    platform,
+    status,
+    responsible,
+    video_type: videoType,
+    hook,
+    product_link: productLink,
+    notes,
+    file_url: fileUrl,
+    storage_path: fileUrl || null,
+    original_filename: originalFilename || null,
+    file_size: fileSize > 0 ? fileSize : null,
+    mime_type: mimeType || null,
+    uploaded_at: uploadedAt || null
+  });
+
+  if (error) {
+    redirect(`/videos?message=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/videos");
+  redirect(`/videos?success=${encodeURIComponent("Video criado com sucesso.")}`);
+}
+
+export async function updateVideo(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const title = String(formData.get("title") ?? "");
+  const projectId = String(formData.get("project_id") ?? "");
+  const platform = String(formData.get("platform") ?? "");
+  const status = String(formData.get("status") ?? "Em produção");
+  const responsible = String(formData.get("responsible") ?? "");
+  const videoType = String(formData.get("video_type") ?? "");
+  const hook = String(formData.get("hook") ?? "");
+  const productLink = String(formData.get("product_link") ?? "");
+  const notes = String(formData.get("notes") ?? "");
+  const fileUrl = String(formData.get("file_url") ?? "");
+  const originalFilename = String(formData.get("original_filename") ?? "");
+  const fileSize = Number(formData.get("file_size") ?? 0);
+  const mimeType = String(formData.get("mime_type") ?? "");
+  const uploadedAt = String(formData.get("uploaded_at") ?? "");
+  const { supabase, user } = await getUser();
+
+  if (!user || !id || !title || !projectId || !platform) {
+    return;
+  }
+
+  const niche = await getProjectName(projectId, user.id);
+
+  if (!niche) {
+    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
+  }
+
+  if (!isValidPrivateStoragePath(fileUrl, user.id)) {
+    redirect(
+      `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
+    );
+  }
+
+  const { error } = await supabase
+    .from("videos")
+    .update({
+      project_id: projectId,
+      title,
+      niche,
+      platform,
+      status,
+      responsible,
+      video_type: videoType,
+      hook,
+      product_link: productLink,
+      notes,
+      file_url: fileUrl,
+      storage_path: fileUrl || null,
+      original_filename: originalFilename || null,
+      file_size: fileSize > 0 ? fileSize : null,
+      mime_type: mimeType || null,
+      uploaded_at: uploadedAt || null
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    redirect(`/videos?message=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/videos");
+  redirect(`/videos?success=${encodeURIComponent("Video atualizado com sucesso.")}`);
+}
+
+export async function deleteVideo(id: string) {
+  const { supabase, user } = await getUser();
+
+  if (!user || !id) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("videos")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/videos");
+  return { error: null };
+}
+
+export async function addVideoComment(formData: FormData) {
+  const videoId = String(formData.get("video_id") ?? "");
+  const body = String(formData.get("body") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user || !videoId || !body) {
+    return { error: "Escreva um comentario." };
+  }
+
+  const { error } = await supabase.from("video_comments").insert({
+    video_id: videoId,
+    user_id: user.id,
+    user_email: user.email ?? null,
+    comment: body,
+    body
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/videos/${videoId}`);
+  revalidatePath("/videos");
+  return { error: null };
+}
+
+export async function createAccount(formData: FormData) {
+  const projectId = String(formData.get("project_id") ?? "");
+  const platform = String(formData.get("platform") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const username = String(formData.get("username") ?? "").trim();
+  const status = String(formData.get("status") ?? "Ativa");
+  const notes = String(formData.get("notes") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user || !platform || !name || !username) {
+    return { error: "Preencha plataforma, nome e usuario da conta." };
+  }
+
+  const { error } = await supabase.from("accounts").insert({
+    user_id: user.id,
+    project_id: projectId || null,
+    platform,
+    name,
+    username,
+    status,
+    notes: notes || null,
+    updated_at: new Date().toISOString()
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/videos");
+  return { error: null };
+}
+
+export async function updateAccount(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const projectId = String(formData.get("project_id") ?? "");
+  const platform = String(formData.get("platform") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const username = String(formData.get("username") ?? "").trim();
+  const status = String(formData.get("status") ?? "Ativa");
+  const notes = String(formData.get("notes") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user || !id || !platform || !name || !username) {
+    return { error: "Conta invalida." };
+  }
+
+  const { error } = await supabase
+    .from("accounts")
+    .update({
+      project_id: projectId || null,
+      platform,
+      name,
+      username,
+      status,
+      notes: notes || null,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/videos");
+  return { error: null };
+}
+
+export async function archiveAccount(id: string) {
+  const { supabase, user } = await getUser();
+
+  if (!user || !id) {
+    return { error: "Conta nao encontrada." };
+  }
+
+  const { error } = await supabase
+    .from("accounts")
+    .update({ status: "Inativa", updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/videos");
+  return { error: null };
+}
+
+export async function createVideoPublication(formData: FormData) {
+  const videoId = String(formData.get("video_id") ?? "");
+  const accountId = String(formData.get("account_id") ?? "");
+  const status = String(formData.get("status") ?? "Nao postado");
+  const postedAt = String(formData.get("posted_at") ?? "");
+  const postUrl = String(formData.get("post_url") ?? "").trim();
+  const notes = String(formData.get("notes") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user || !videoId || !accountId) {
+    return { error: "Selecione uma conta." };
+  }
+
+  const { error } = await supabase.from("video_publications").insert({
+    video_id: videoId,
+    account_id: accountId,
+    user_id: user.id,
+    status,
+    posted_at: postedAt || null,
+    post_url: postUrl || null,
+    views: optionalNumber(formData.get("views")),
+    likes: optionalNumber(formData.get("likes")),
+    comments_count: optionalNumber(formData.get("comments_count")),
+    shares: optionalNumber(formData.get("shares")),
+    notes: notes || null,
+    updated_at: new Date().toISOString()
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/videos/${videoId}`);
+  revalidatePath("/videos");
+  revalidatePath("/dashboard");
+  return { error: null };
+}
+
+export async function updateVideoPublication(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const videoId = String(formData.get("video_id") ?? "");
+  const accountId = String(formData.get("account_id") ?? "");
+  const status = String(formData.get("status") ?? "Nao postado");
+  const postedAt = String(formData.get("posted_at") ?? "");
+  const postUrl = String(formData.get("post_url") ?? "").trim();
+  const notes = String(formData.get("notes") ?? "").trim();
+  const { supabase, user } = await getUser();
+
+  if (!user || !id || !videoId || !accountId) {
+    return { error: "Registro invalido." };
+  }
+
+  const { error } = await supabase
+    .from("video_publications")
+    .update({
+      account_id: accountId,
+      status,
+      posted_at: postedAt || null,
+      post_url: postUrl || null,
+      views: optionalNumber(formData.get("views")),
+      likes: optionalNumber(formData.get("likes")),
+      comments_count: optionalNumber(formData.get("comments_count")),
+      shares: optionalNumber(formData.get("shares")),
+      notes: notes || null,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .eq("video_id", videoId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/videos/${videoId}`);
+  revalidatePath("/videos");
+  revalidatePath("/dashboard");
+  return { error: null };
+}
+
+export async function deleteVideoPublication(id: string, videoId: string) {
+  const { supabase, user } = await getUser();
+
+  if (!user || !id || !videoId) {
+    return { error: "Registro nao encontrado." };
+  }
+
+  const { error } = await supabase
+    .from("video_publications")
+    .delete()
+    .eq("id", id)
+    .eq("video_id", videoId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/videos/${videoId}`);
+  revalidatePath("/videos");
+  revalidatePath("/dashboard");
+  return { error: null };
+}

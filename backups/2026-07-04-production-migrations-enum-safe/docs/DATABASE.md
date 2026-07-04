@@ -230,11 +230,6 @@ order by enumsortorder;
 
 O app usa `Em produção` com acento para bater com o enum existente.
 
-Se a migration adicionar novos valores ao enum durante a execucao, o Postgres so
-permite usar esses valores com seguranca depois do commit. Por isso a migration
-cria `projects` e adiciona os labels do enum primeiro, sem recriar o enum nem
-apagar dados.
-
 ## Estado Atual Dos Uploads
 
 - Upload de video em `/videos`: habilitado para mp4, mov, m4v e webm.

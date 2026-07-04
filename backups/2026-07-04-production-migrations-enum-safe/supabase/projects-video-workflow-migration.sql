@@ -1,6 +1,6 @@
 -- Evolui Nichos fixos para Projects criados pelo usuario.
 -- A interface pode continuar usando o termo "Nicho", mas a entidade tecnica e `projects`.
--- Migration segura para Supabase SQL Editor e para bancos onde videos.status usa enum `video_status`.
+-- Esta migration e idempotente e segura para executar no Supabase SQL Editor.
 
 create extension if not exists "pgcrypto";
 
@@ -99,62 +99,42 @@ alter table public.videos
 drop constraint if exists videos_status_check;
 
 do $$
-declare
-  status_is_enum boolean;
-  enum_had_em_producao boolean;
 begin
-  select exists (
+  if exists (
     select 1
-    from information_schema.columns
-    where table_schema = 'public'
-      and table_name = 'videos'
-      and column_name = 'status'
-      and udt_name = 'video_status'
-  )
-  into status_is_enum;
-
-  if status_is_enum then
-    select exists (
-      select 1
-      from pg_enum
-      where enumtypid = 'public.video_status'::regtype
-        and enumlabel = 'Em produção'
-    )
-    into enum_had_em_producao;
-
+    from pg_type
+    where typname = 'video_status'
+  ) then
     alter type public.video_status add value if not exists 'Em produção';
     alter type public.video_status add value if not exists 'Agendado';
     alter type public.video_status add value if not exists 'Publicado';
     alter type public.video_status add value if not exists 'Bloqueado';
     alter type public.video_status add value if not exists 'Reprovado';
     alter type public.video_status add value if not exists 'Arquivado';
+  end if;
+end $$;
 
-    if enum_had_em_producao then
-      alter table public.videos
-      alter column status set default 'Em produção';
+alter table public.videos
+alter column status set default 'Em produção';
 
-      update public.videos
-      set status = 'Em produção'
-      where status::text in ('Gravado', 'Em producao');
+update public.videos
+set status = 'Em produção'
+where status::text in ('Gravado', 'Em producao');
 
-      update public.videos
-      set status = 'Publicado'
-      where status::text = 'Postado';
-    else
-      raise notice 'Valores novos foram adicionados ao enum video_status. Se quiser normalizar dados antigos nesta mesma migration, execute este arquivo novamente depois do commit.';
-    end if;
-  else
-    alter table public.videos
-    alter column status set default 'Em produção';
+update public.videos
+set status = 'Publicado'
+where status::text = 'Postado';
 
-    update public.videos
-    set status = 'Em produção'
-    where status::text in ('Gravado', 'Em producao');
-
-    update public.videos
-    set status = 'Publicado'
-    where status::text = 'Postado';
-
+do $$
+begin
+  if not exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'videos'
+      and column_name = 'status'
+      and udt_name = 'video_status'
+  ) then
     alter table public.videos
     add constraint videos_status_check
     check (status in (
