@@ -21,7 +21,7 @@ create table if not exists public.videos (
   title text not null,
   niche text not null default 'Sem nicho',
   platform text not null default 'TikTok',
-  status text not null default 'Em produção',
+  status text not null default 'Em producao',
   responsible text,
   video_type text,
   hook text,
@@ -98,57 +98,30 @@ drop constraint if exists videos_platform_check;
 alter table public.videos
 drop constraint if exists videos_status_check;
 
-do $$
-begin
-  if exists (
-    select 1
-    from pg_type
-    where typname = 'video_status'
-  ) then
-    alter type public.video_status add value if not exists 'Em produção';
-    alter type public.video_status add value if not exists 'Agendado';
-    alter type public.video_status add value if not exists 'Publicado';
-    alter type public.video_status add value if not exists 'Bloqueado';
-    alter type public.video_status add value if not exists 'Reprovado';
-    alter type public.video_status add value if not exists 'Arquivado';
-  end if;
-end $$;
+alter table public.videos
+alter column status set default 'Em producao';
+
+update public.videos
+set status = case status
+  when 'Gravado' then 'Em producao'
+  when 'Em produção' then 'Em producao'
+  when 'Postado' then 'Publicado'
+  else status
+end
+where status in ('Gravado', 'Em produção', 'Postado');
 
 alter table public.videos
-alter column status set default 'Em produção';
-
-update public.videos
-set status = 'Em produção'
-where status::text in ('Gravado', 'Em producao');
-
-update public.videos
-set status = 'Publicado'
-where status::text = 'Postado';
-
-do $$
-begin
-  if not exists (
-    select 1
-    from information_schema.columns
-    where table_schema = 'public'
-      and table_name = 'videos'
-      and column_name = 'status'
-      and udt_name = 'video_status'
-  ) then
-    alter table public.videos
-    add constraint videos_status_check
-    check (status in (
-      'Em produção',
-      'Editando',
-      'Pronto',
-      'Agendado',
-      'Publicado',
-      'Bloqueado',
-      'Reprovado',
-      'Arquivado'
-    ));
-  end if;
-end $$;
+add constraint videos_status_check
+check (status in (
+  'Em producao',
+  'Editando',
+  'Pronto',
+  'Agendado',
+  'Publicado',
+  'Bloqueado',
+  'Reprovado',
+  'Arquivado'
+));
 
 alter table public.videos
 add constraint videos_platform_check
@@ -184,7 +157,7 @@ create table if not exists public.video_statuses (
 
 insert into public.video_statuses (name, sort_order)
 values
-  ('Em produção', 1),
+  ('Em producao', 1),
   ('Editando', 2),
   ('Pronto', 3),
   ('Agendado', 4),

@@ -30,7 +30,7 @@ export const publicationStatuses = [
 ] as const;
 
 export const statuses = [
-  "Em produção",
+  "Em producao",
   "Editando",
   "Pronto",
   "Agendado",

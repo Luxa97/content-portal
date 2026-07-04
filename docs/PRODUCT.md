@@ -86,7 +86,7 @@ fonte principal do sistema.
 
 ## Status Dos Videos
 
-- Em producao
+- Em produção
 - Editando
 - Pronto
 - Agendado

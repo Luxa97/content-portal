@@ -86,7 +86,7 @@ Campos principais:
 
 Status atuais:
 
-- Em produção
+- Em producao
 - Editando
 - Pronto
 - Agendado
@@ -218,17 +218,6 @@ Ordem recomendada para producao:
 
 1. `supabase/projects-video-workflow-migration.sql`
 2. `supabase/accounts-video-publications-migration.sql`
-
-Para conferir os valores aceitos pelo enum `video_status` no Supabase, use:
-
-```sql
-select enumlabel
-from pg_enum
-where enumtypid = 'public.video_status'::regtype
-order by enumsortorder;
-```
-
-O app usa `Em produção` com acento para bater com o enum existente.
 
 ## Estado Atual Dos Uploads
 

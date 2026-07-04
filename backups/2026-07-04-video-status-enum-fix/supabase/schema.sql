@@ -20,7 +20,7 @@ create table public.videos (
   title text not null,
   niche text not null,
   platform text not null check (platform in ('TikTok', 'Instagram', 'Facebook', 'YouTube', 'Shopee', 'Amazon', 'Outro')),
-  status text not null default 'Em produção' check (status in ('Em produção', 'Editando', 'Pronto', 'Agendado', 'Publicado', 'Bloqueado', 'Reprovado', 'Arquivado')),
+  status text not null default 'Em producao' check (status in ('Em producao', 'Editando', 'Pronto', 'Agendado', 'Publicado', 'Bloqueado', 'Reprovado', 'Arquivado')),
   responsible text not null default 'Lucas' check (responsible in ('Lucas', 'Larissa')),
   video_type text not null default 'Review' check (video_type in ('Review', 'Oferta', 'Comparação', 'Rotina', 'Unboxing', 'Demonstração', 'Referência viral', 'Outro')),
   hook text,
@@ -263,7 +263,7 @@ using (
 
 insert into public.video_statuses (name, sort_order)
 values
-  ('Em produção', 1),
+  ('Em producao', 1),
   ('Editando', 2),
   ('Pronto', 3),
   ('Agendado', 4),

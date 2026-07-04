@@ -144,7 +144,7 @@ export async function createVideo(formData: FormData) {
   const title = String(formData.get("title") ?? "");
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
-  const status = String(formData.get("status") ?? "Em produção");
+  const status = String(formData.get("status") ?? "Em producao");
   const responsible = String(formData.get("responsible") ?? "");
   const videoType = String(formData.get("video_type") ?? "");
   const hook = String(formData.get("hook") ?? "");
@@ -206,7 +206,7 @@ export async function updateVideo(formData: FormData) {
   const title = String(formData.get("title") ?? "");
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
-  const status = String(formData.get("status") ?? "Em produção");
+  const status = String(formData.get("status") ?? "Em producao");
   const responsible = String(formData.get("responsible") ?? "");
   const videoType = String(formData.get("video_type") ?? "");
   const hook = String(formData.get("hook") ?? "");
