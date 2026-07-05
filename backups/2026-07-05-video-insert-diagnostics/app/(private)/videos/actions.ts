@@ -141,8 +141,6 @@ export async function deleteProject(id: string) {
 }
 
 export async function createVideo(formData: FormData) {
-  console.log("[VIDEO_UPLOAD] action createVideo iniciada");
-
   const typedTitle = String(formData.get("title") ?? "").trim();
   const projectId = String(formData.get("project_id") ?? "");
   const platform = String(formData.get("platform") ?? "");
@@ -150,9 +148,7 @@ export async function createVideo(formData: FormData) {
   const responsible = String(formData.get("responsible") ?? "");
   const videoType = String(formData.get("video_type") ?? "");
   const hook = String(formData.get("hook") ?? "");
-  const productUrl = String(
-    formData.get("product_url") ?? formData.get("product_link") ?? ""
-  );
+  const productLink = String(formData.get("product_link") ?? "");
   const notes = String(formData.get("notes") ?? "");
   const storagePath = String(formData.get("storage_path") ?? "");
   const originalFilename = String(formData.get("original_filename") ?? "");
@@ -162,12 +158,8 @@ export async function createVideo(formData: FormData) {
   const { supabase, user } = await getUser();
 
   if (!user) {
-    console.error("[VIDEO_UPLOAD] usuario nao autenticado na action");
     return { error: "Voce precisa estar logado para salvar o video." };
   }
-
-  console.log("[VIDEO_UPLOAD] usuario autenticado", user.id);
-  console.log("[VIDEO_UPLOAD] storagePath", storagePath);
 
   if (!storagePath) {
     return { error: "Escolha um arquivo de video para enviar." };
@@ -221,45 +213,18 @@ export async function createVideo(formData: FormData) {
     videoData.hook = hook;
   }
 
-  if (productUrl) {
-    videoData.product_url = productUrl;
+  if (productLink) {
+    videoData.product_link = productLink;
   }
 
   if (notes) {
     videoData.notes = notes;
   }
 
-  console.log("[VIDEO_UPLOAD] dados para insert", videoData);
+  const { error } = await supabase.from("videos").insert(videoData);
 
-  try {
-    const insertResult = await supabase
-      .from("videos")
-      .insert(videoData)
-      .select();
-
-    console.log("[VIDEO_UPLOAD] resultado insert", insertResult);
-
-    if (insertResult.error) {
-      console.error("[VIDEO_UPLOAD] erro ao salvar video", insertResult.error);
-      return {
-        error: `Erro ao salvar registro: ${insertResult.error.message}`
-      };
-    }
-
-    if (!insertResult.data?.length) {
-      console.error("[VIDEO_UPLOAD] insert sem erro, mas sem linha retornada");
-      return {
-        error: "Erro ao salvar registro: o Supabase nao retornou a linha criada."
-      };
-    }
-  } catch (error) {
-    console.error("[VIDEO_UPLOAD] erro inesperado", error);
-    return {
-      error:
-        error instanceof Error
-          ? `Erro inesperado ao salvar registro: ${error.message}`
-          : "Erro inesperado ao salvar registro."
-    };
+  if (error) {
+    return { error: `Erro ao salvar registro: ${error.message}` };
   }
 
   revalidatePath("/videos");

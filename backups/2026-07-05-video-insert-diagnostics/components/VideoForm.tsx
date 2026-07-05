@@ -49,12 +49,6 @@ export function VideoForm({
   const [statusMessage, setStatusMessage] = useState("");
 
   async function uploadVideoFile(file: File) {
-    console.log("[VIDEO_UPLOAD] arquivo recebido", {
-      name: file.name,
-      size: file.size,
-      type: file.type
-    });
-
     const allowedTypes = [
       "video/mp4",
       "video/quicktime",
@@ -80,25 +74,18 @@ export function VideoForm({
       throw new Error("Voce precisa estar logado para enviar videos.");
     }
 
-    console.log("[VIDEO_UPLOAD] usuario autenticado", user.id);
-
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const nextStoragePath = `${user.id}/${Date.now()}-${safeName}`;
 
-    console.log("[VIDEO_UPLOAD] storagePath", nextStoragePath);
-
-    const uploadResult = await supabase.storage
+    const { error } = await supabase.storage
       .from("videos")
       .upload(nextStoragePath, file, {
         cacheControl: "3600",
         upsert: false
       });
 
-    console.log("[VIDEO_UPLOAD] upload storage concluido", uploadResult.data);
-
-    if (uploadResult.error) {
-      console.error("[VIDEO_UPLOAD] erro no upload storage", uploadResult.error);
-      throw new Error(uploadResult.error.message);
+    if (error) {
+      throw new Error(error.message);
     }
 
     return {
@@ -112,7 +99,6 @@ export function VideoForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("[VIDEO_UPLOAD] iniciado");
 
     const form = formRef.current;
 
@@ -359,9 +345,9 @@ export function VideoForm({
           <label className="block text-sm font-medium text-gray-700">
             Link do produto
             <input
-              name="product_url"
+              name="product_link"
               type="url"
-              defaultValue={video?.product_url ?? video?.product_link ?? ""}
+              defaultValue={video?.product_link ?? ""}
               placeholder="https://..."
               className="mt-1 h-10 w-full rounded-md border border-line px-3 outline-none focus:border-ink"
             />

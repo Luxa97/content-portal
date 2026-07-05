@@ -75,7 +75,7 @@ Campos principais:
 - `responsible`: responsavel opcional.
 - `video_type`: tipo de video opcional.
 - `hook`: frase inicial opcional.
-- `product_url`: link do produto opcional.
+- `product_link`: link do produto opcional.
 - `notes`: observacoes opcionais.
 - `storage_path`: caminho privado principal do arquivo no Storage.
 - `original_filename`: nome original do arquivo.
@@ -215,7 +215,6 @@ Arquivos atuais:
 - `supabase/projects-video-workflow-migration.sql`: Projects, vinculo video -> Project, novos status e comentarios internos.
 - `supabase/accounts-video-publications-migration.sql`: contas reais e historico manual de postagens por conta.
 - `supabase/video-upload-first-flow-migration.sql`: torna o upload do arquivo original o fluxo principal de `/videos` e deixa metadados opcionais.
-- `supabase/video-insert-diagnostics-migration.sql`: garante colunas e constraints seguras para o insert minimo apos upload.
 
 Ordem recomendada para producao:
 

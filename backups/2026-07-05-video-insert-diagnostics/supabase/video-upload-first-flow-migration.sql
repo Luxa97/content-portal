@@ -26,7 +26,6 @@ add column if not exists status text,
 add column if not exists responsible text,
 add column if not exists video_type text,
 add column if not exists hook text,
-add column if not exists product_url text,
 add column if not exists product_link text,
 add column if not exists notes text,
 add column if not exists storage_path text,
@@ -54,33 +53,13 @@ begin
   end if;
 end $$;
 
-do $$
-begin
-  if exists (
-    select 1
-    from information_schema.columns
-    where table_schema = 'public'
-      and table_name = 'videos'
-      and column_name = 'product_link'
-  ) then
-    update public.videos
-    set product_url = product_link
-    where product_url is null
-      and product_link is not null
-      and product_link <> '';
-  end if;
-end $$;
-
 alter table public.videos
 alter column title drop not null,
 alter column niche drop not null,
 alter column platform drop not null,
 alter column status drop not null,
 alter column responsible drop not null,
-alter column video_type drop not null,
-alter column hook drop not null,
-alter column product_url drop not null,
-alter column notes drop not null;
+alter column video_type drop not null;
 
 alter table public.videos enable row level security;
 

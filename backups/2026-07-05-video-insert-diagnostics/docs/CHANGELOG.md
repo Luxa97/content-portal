@@ -11,8 +11,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Login passou a usar o Supabase Auth como fonte de autorizacao para usuarios ja existentes.
 - A allowlist continua bloqueando apenas novos cadastros fora dos e-mails permitidos.
 - Adicionados logs temporarios `[auth-debug]` para identificar a etapa exata do fluxo de login/cadastro.
-- Adicionados logs temporarios `[VIDEO_UPLOAD]` para diagnosticar upload, dados do insert e resposta real do Supabase.
-- Criada migration `supabase/video-insert-diagnostics-migration.sql` para garantir o insert minimo em `public.videos`.
 
 ## 2026-07-04 - v0.6.1 - Upload de video como fluxo principal
 
