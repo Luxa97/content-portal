@@ -2,13 +2,6 @@
 
 Historico relevante do Content Portal, organizado por data e versao.
 
-## 2026-07-05 - v0.6.2 - Correção da allowlist de login
-
-- Adicionado `lucas_as97@hotmail.com` aos e-mails autorizados.
-- Corrigido o e-mail autorizado da Larissa para `larissaborgesbaselli@gmail.com`.
-- Mantido login case-insensitive com normalizacao por `toLowerCase`.
-- Mensagem de senha/e-mail incorretos agora fica separada de "Acesso nao autorizado".
-
 ## 2026-07-04 - v0.6.1 - Upload de video como fluxo principal
 
 - Ajustado `/videos` para tratar video como arquivo original armazenado.

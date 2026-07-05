@@ -19,9 +19,8 @@ Decisao: apenas e-mails autorizados podem acessar o portal.
 
 E-mails atuais:
 
-- `lucas_as97@hotmail.com`
 - `lucasassantos97@gmail.com`
-- `larissaborgesbaselli@gmail.com`
+- `larissaborgesbaselii@gmail.com`
 
 Motivo: impedir cadastro publico e manter o MVP restrito.
 

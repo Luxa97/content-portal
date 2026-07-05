@@ -39,12 +39,6 @@ Usuarios atuais:
 
 O acesso e privado e limitado por e-mails autorizados.
 
-E-mails autorizados atuais:
-
-- `lucas_as97@hotmail.com`
-- `lucasassantos97@gmail.com`
-- `larissaborgesbaselli@gmail.com`
-
 ## Nichos E Projects
 
 Na interface, o usuario ve o termo "Nicho".
