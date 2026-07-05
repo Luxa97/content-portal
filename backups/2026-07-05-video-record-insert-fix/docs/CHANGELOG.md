@@ -9,8 +9,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Novos registros usam `storage_path` como caminho privado principal no Supabase Storage.
 - Removida a gravacao de `file_url` em novos cadastros para evitar erro de schema cache em producao.
 - Criada migration `supabase/video-upload-first-flow-migration.sql`.
-- Corrigido o fluxo para mostrar erro quando o upload termina, mas o insert em `public.videos` falha.
-- O cadastro de video agora salva primeiro o registro minimo no banco e so envia campos opcionais preenchidos.
 
 ## 2026-07-04 - v0.6.0 - Contas e historico de postagens
 

@@ -2,7 +2,6 @@
 
 import { Save } from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { DownloadFileButton } from "@/components/DownloadFileButton";
 import {
@@ -15,12 +14,7 @@ import { createClient } from "@/lib/supabase/browser";
 import type { Project, Video } from "@/lib/types";
 
 type VideoFormProps = {
-  action: (
-    formData: FormData
-  ) =>
-    | void
-    | { error?: string | null; success?: string | null }
-    | Promise<void | { error?: string | null; success?: string | null }>;
+  action: (formData: FormData) => void | Promise<void>;
   projects: Project[];
   video?: Video;
   submitLabel?: string;
@@ -33,7 +27,6 @@ export function VideoForm({
   submitLabel = "Salvar video"
 }: VideoFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const router = useRouter();
   const [storagePath, setStoragePath] = useState(
     video?.storage_path ?? video?.file_url ?? ""
   );
@@ -44,9 +37,8 @@ export function VideoForm({
   const [mimeType, setMimeType] = useState(video?.mime_type ?? "");
   const [uploadedAt, setUploadedAt] = useState(video?.uploaded_at ?? "");
   const [isUploading, setIsUploading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
+  const [uploadSuccess, setUploadSuccess] = useState("");
 
   async function uploadVideoFile(file: File) {
     const allowedTypes = [
@@ -116,7 +108,7 @@ export function VideoForm({
     let nextUploadedAt = uploadedAt;
 
     setUploadError("");
-    setStatusMessage("");
+    setUploadSuccess("");
 
     if (isNewVideo && (!file || file.size === 0)) {
       setUploadError("Escolha um arquivo de video para enviar.");
@@ -137,7 +129,7 @@ export function VideoForm({
         setFileSize(uploadedFile.fileSize);
         setMimeType(uploadedFile.mimeType);
         setUploadedAt(uploadedFile.uploadedAt);
-        setStatusMessage("Upload concluido.");
+        setUploadSuccess("Upload concluido. Salvando registro...");
       } catch (error) {
         setUploadError(
           error instanceof Error ? error.message : "Nao foi possivel enviar o video."
@@ -153,25 +145,7 @@ export function VideoForm({
     formData.set("file_size", nextFileSize);
     formData.set("mime_type", nextMimeType);
     formData.set("uploaded_at", nextUploadedAt);
-    setIsSaving(true);
-    setStatusMessage("Salvando registro...");
-
-    const result = await action(formData);
-
-    if (result && "error" in result && result.error) {
-      setUploadError(result.error);
-      setStatusMessage("");
-      setIsSaving(false);
-      return;
-    }
-
-    const successMessage =
-      result && "success" in result && result.success
-        ? result.success
-        : "Video salvo com sucesso.";
-    setStatusMessage(successMessage);
-    router.push(`/videos?success=${encodeURIComponent(successMessage)}`);
-    router.refresh();
+    await action(formData);
   }
 
   return (
@@ -212,9 +186,9 @@ export function VideoForm({
         {uploadError ? (
           <p className="mt-2 text-sm font-medium text-red-600">{uploadError}</p>
         ) : null}
-        {statusMessage ? (
+        {uploadSuccess ? (
           <p className="mt-2 text-sm font-medium text-green-700">
-            {statusMessage}
+            {uploadSuccess}
           </p>
         ) : null}
         {originalFilename ? (
@@ -365,9 +339,9 @@ export function VideoForm({
         />
       </label>
 
-      <Button className="w-fit gap-2" disabled={isUploading || isSaving}>
+      <Button className="w-fit gap-2" disabled={isUploading}>
         <Save size={16} />
-        {isUploading ? "Enviando..." : isSaving ? "Salvando..." : submitLabel}
+        {isUploading ? "Enviando..." : submitLabel}
       </Button>
     </form>
   );

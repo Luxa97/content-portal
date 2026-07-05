@@ -158,78 +158,54 @@ export async function createVideo(formData: FormData) {
   const { supabase, user } = await getUser();
 
   if (!user) {
-    return { error: "Voce precisa estar logado para salvar o video." };
+    return;
   }
 
   if (!storagePath) {
-    return { error: "Escolha um arquivo de video para enviar." };
+    redirect(
+      `/videos?message=${encodeURIComponent("Escolha um arquivo de video para enviar.")}`
+    );
   }
 
   if (!isValidPrivateStoragePath(storagePath, user.id)) {
-    return { error: "Arquivo privado invalido." };
+    redirect(
+      `/videos?message=${encodeURIComponent("Arquivo privado invalido.")}`
+    );
   }
 
   const niche = projectId ? await getProjectName(projectId, user.id) : "";
 
   if (projectId && !niche) {
-    return { error: "Selecione um nicho valido." };
+    redirect(`/videos?message=${encodeURIComponent("Selecione um nicho valido.")}`);
   }
 
   const title = typedTitle || originalFilename || "Video sem titulo";
-  const videoData: Record<string, string | number | null> = {
+
+  const { error } = await supabase.from("videos").insert({
     user_id: user.id,
+    project_id: projectId || null,
     title,
+    niche: niche || null,
+    platform: platform || null,
+    status: String(formData.get("status") ?? "") || null,
+    responsible: responsible || null,
+    video_type: videoType || null,
+    hook: hook || null,
+    product_link: productLink || null,
+    notes: notes || null,
     storage_path: storagePath,
-    original_filename: originalFilename || title,
+    original_filename: originalFilename || null,
     file_size: fileSize > 0 ? fileSize : null,
     mime_type: mimeType || null,
     uploaded_at: uploadedAt || null
-  };
-
-  if (projectId) {
-    videoData.project_id = projectId;
-    videoData.niche = niche;
-  }
-
-  if (platform) {
-    videoData.platform = platform;
-  }
-
-  const selectedStatus = String(formData.get("status") ?? "");
-
-  if (selectedStatus) {
-    videoData.status = selectedStatus;
-  }
-
-  if (responsible) {
-    videoData.responsible = responsible;
-  }
-
-  if (videoType) {
-    videoData.video_type = videoType;
-  }
-
-  if (hook) {
-    videoData.hook = hook;
-  }
-
-  if (productLink) {
-    videoData.product_link = productLink;
-  }
-
-  if (notes) {
-    videoData.notes = notes;
-  }
-
-  const { error } = await supabase.from("videos").insert(videoData);
+  });
 
   if (error) {
-    return { error: `Erro ao salvar registro: ${error.message}` };
+    redirect(`/videos?message=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/videos");
-  revalidatePath("/dashboard");
-  return { success: "Video salvo com sucesso.", error: null };
+  redirect(`/videos?success=${encodeURIComponent("Video enviado com sucesso.")}`);
 }
 
 export async function updateVideo(formData: FormData) {
