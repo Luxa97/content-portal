@@ -114,8 +114,7 @@ Padrao recomendado:
 ## Fluxo De Autenticacao
 
 - Login e cadastro ficam em `app/login/actions.ts`.
-- Usuarios existentes no Supabase Auth podem fazer login.
-- A lista de usuarios autorizados em `lib/allowed-users.ts` bloqueia apenas novos cadastros.
+- A lista de usuarios autorizados fica em `lib/allowed-users.ts`.
 - O middleware protege `/dashboard`, `/videos`, `/hooks` e `/referencias`.
 - Supabase Auth gerencia a sessao.
 

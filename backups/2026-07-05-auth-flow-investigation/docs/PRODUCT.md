@@ -37,10 +37,9 @@ Usuarios atuais:
 - Lucas
 - Larissa
 
-O acesso e privado e limitado a usuarios existentes no Supabase Auth. Novos
-cadastros continuam restritos por e-mails autorizados.
+O acesso e privado e limitado por e-mails autorizados.
 
-E-mails autorizados para novo cadastro:
+E-mails autorizados atuais:
 
 - `lucas_as97@hotmail.com`
 - `lucasassantos97@gmail.com`

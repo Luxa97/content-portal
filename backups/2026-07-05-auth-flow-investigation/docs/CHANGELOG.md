@@ -8,9 +8,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Corrigido o e-mail autorizado da Larissa para `larissaborgesbaselli@gmail.com`.
 - Mantido login case-insensitive com normalizacao por `toLowerCase`.
 - Mensagem de senha/e-mail incorretos agora fica separada de "Acesso nao autorizado".
-- Login passou a usar o Supabase Auth como fonte de autorizacao para usuarios ja existentes.
-- A allowlist continua bloqueando apenas novos cadastros fora dos e-mails permitidos.
-- Adicionados logs temporarios `[auth-debug]` para identificar a etapa exata do fluxo de login/cadastro.
 
 ## 2026-07-04 - v0.6.1 - Upload de video como fluxo principal
 

@@ -15,8 +15,7 @@ producao de conteudo de Lucas e Larissa.
 
 Data: 2026-07-02
 
-Decisao: usuarios existentes no Supabase Auth podem acessar o portal. Novos
-cadastros continuam restritos por allowlist de e-mails.
+Decisao: apenas e-mails autorizados podem acessar o portal.
 
 E-mails atuais:
 
@@ -24,8 +23,7 @@ E-mails atuais:
 - `lucasassantos97@gmail.com`
 - `larissaborgesbaselli@gmail.com`
 
-Motivo: impedir cadastro publico e manter o MVP restrito sem bloquear usuarios
-ja criados manualmente no Supabase Auth.
+Motivo: impedir cadastro publico e manter o MVP restrito.
 
 ## ADR-003 - Ambiente compartilhado por Lucas e Larissa
 
