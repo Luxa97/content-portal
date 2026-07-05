@@ -1,0 +1,165 @@
+# Product
+
+## Objetivo
+
+O Content Portal e um portal privado para organizar a producao de conteudo de
+Lucas e Larissa para canais de social commerce.
+
+O sistema centraliza arquivos de video, ideias, classificacoes, hooks, links e status para
+reduzir perda de informacao e facilitar a rotina de publicacao.
+
+## Visao Do Produto
+
+O produto deve evoluir de um MVP simples para um SaaS interno de gestao de
+conteudo, com foco em velocidade operacional, clareza e aprendizado continuo.
+
+O portal deve ajudar a responder rapidamente:
+
+- O que ja foi gravado?
+- O que esta em edicao?
+- O que esta pronto para postar?
+- Quem e responsavel por cada video?
+- Qual tipo de conteudo esta sendo produzido?
+- Quais hooks e referencias podem ser reutilizados?
+
+## Problema Que Resolve
+
+Sem um sistema central, a producao de conteudo tende a ficar espalhada entre
+conversas, notas, arquivos e links. Isso dificulta acompanhar status, priorizar
+videos e aprender com referencias virais.
+
+O Content Portal resolve isso criando uma fonte unica de organizacao.
+
+## Usuarios
+
+Usuarios atuais:
+
+- Lucas
+- Larissa
+
+O acesso e privado e limitado a usuarios existentes no Supabase Auth. Novos
+cadastros continuam restritos por e-mails autorizados.
+
+E-mails autorizados para novo cadastro:
+
+- `lucas_as97@hotmail.com`
+- `lucasassantos97@gmail.com`
+- `larissaborgesbaselli@gmail.com`
+
+## Nichos E Projects
+
+Na interface, o usuario ve o termo "Nicho".
+
+Na arquitetura interna, banco de dados, codigo e documentacao tecnica, a entidade
+correta e `Project`.
+
+Exemplos de Projects:
+
+- Creatina
+- Cinta Modeladora
+- Ferramentas
+- Casa e Cozinha
+
+Projects sao criados pelo usuario. Nao existem mais nichos fixos hardcoded como
+fonte principal do sistema.
+
+## Plataformas
+
+- TikTok
+- Instagram
+- Shopee
+
+## Funcionalidades Atuais
+
+- Login com Supabase Auth.
+- Cadastro restrito por e-mails autorizados.
+- Dashboard privado.
+- Upload e organizacao de videos originais.
+- Classificacao por Nicho/Project criado pelo usuario.
+- Classificacao por plataforma.
+- Classificacao por status.
+- Classificacao por responsavel.
+- Classificacao por tipo de video.
+- Campos editoriais opcionais para hook, link do produto e observacoes.
+- Upload do arquivo original de video sem compressao.
+- Download do arquivo original por usuario autenticado.
+- Media Library inicial para enviar, listar e baixar videos, fotos e arquivos.
+- Comentarios internos por video.
+- Gerenciamento de contas reais por plataforma.
+- Historico manual de onde cada video foi publicado.
+- Metricas manuais por postagem.
+- Pagina de hooks iniciais.
+- Pagina de referencias virais iniciais.
+
+## Status Dos Videos
+
+- Em produção
+- Editando
+- Pronto
+- Agendado
+- Publicado
+- Bloqueado
+- Reprovado
+- Arquivado
+
+## Tipos De Video
+
+- Review
+- Oferta
+- Comparação
+- Rotina
+- Unboxing
+- Demonstração
+- Referência viral
+- Outro
+
+## Responsaveis
+
+- Lucas
+- Larissa
+
+## Funcionalidades Planejadas
+
+- Filtros na lista de videos.
+- Busca por titulo, hook ou nicho.
+- Biblioteca editavel de hooks.
+- Biblioteca editavel de referencias virais.
+- Calendario de publicacao.
+- Analytics por plataforma, nicho e tipo de conteudo.
+- Automacoes de lembrete.
+- IA para sugestao de hooks e roteiros, em etapa futura.
+
+## Tecnologias Utilizadas
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+- Supabase Auth
+- Supabase Postgres
+- Supabase Storage planejado
+- Vercel para deploy
+- GitHub como fonte oficial do codigo
+
+## Fluxo De Uso
+
+1. Usuario autorizado acessa o portal.
+2. Faz login com Supabase Auth.
+3. Entra no dashboard privado.
+4. Envia o arquivo original do video em `/videos`.
+5. Se quiser, adiciona titulo, Nicho/Project e observacoes.
+6. Depois, pode preencher plataforma, status, responsavel, tipo, hook e link do produto.
+7. Registra comentarios internos sem apagar historico.
+8. Marca onde o video foi publicado, escolhendo uma conta real.
+9. Atualiza status, postagens e metricas conforme a rotina avanca.
+10. Consulta dashboard e lista para acompanhar a biblioteca e o pipeline.
+
+## Modulos Futuros
+
+- Modulo de calendario.
+- Modulo de biblioteca de referencias.
+- Modulo de Media Library avancada.
+- Modulo de Media Tools em servico externo.
+- Modulo de biblioteca de produtos.
+- Modulo de analytics.
+- Modulo de IA para apoio criativo.
+- Modulo de automacoes e lembretes.
