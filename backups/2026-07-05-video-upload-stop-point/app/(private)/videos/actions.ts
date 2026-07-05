@@ -184,8 +184,6 @@ export async function createVideo(formData: FormData) {
   }
 
   const title = typedTitle || originalFilename || "Video sem titulo";
-  console.log("[VIDEO_UPLOAD] preparando videoData");
-
   const videoData: Record<string, string | number | null> = {
     user_id: user.id,
     title,
@@ -234,17 +232,14 @@ export async function createVideo(formData: FormData) {
   console.log("[VIDEO_UPLOAD] dados para insert", videoData);
 
   try {
-    console.log("[VIDEO_UPLOAD] insert iniciado");
     const insertResult = await supabase
       .from("videos")
       .insert(videoData)
       .select();
 
-    console.log("[VIDEO_UPLOAD] insert concluido");
     console.log("[VIDEO_UPLOAD] resultado insert", insertResult);
 
     if (insertResult.error) {
-      console.error("[VIDEO_UPLOAD] insert erro", insertResult.error);
       console.error("[VIDEO_UPLOAD] erro ao salvar video", insertResult.error);
       return {
         error: `Erro ao salvar registro: ${insertResult.error.message}`
@@ -267,11 +262,8 @@ export async function createVideo(formData: FormData) {
     };
   }
 
-  console.log("[VIDEO_UPLOAD] revalidate iniciado");
   revalidatePath("/videos");
   revalidatePath("/dashboard");
-  console.log("[VIDEO_UPLOAD] revalidate concluido");
-  console.log("[VIDEO_UPLOAD] retornando sucesso");
   return { success: "Video salvo com sucesso.", error: null };
 }
 

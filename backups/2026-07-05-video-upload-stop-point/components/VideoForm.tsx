@@ -86,21 +86,13 @@ export function VideoForm({
     const nextStoragePath = `${user.id}/${Date.now()}-${safeName}`;
 
     console.log("[VIDEO_UPLOAD] storagePath", nextStoragePath);
-    console.log("[VIDEO_UPLOAD] upload storage iniciado");
 
-    let uploadResult;
-
-    try {
-      uploadResult = await supabase.storage
-        .from("videos")
-        .upload(nextStoragePath, file, {
-          cacheControl: "3600",
-          upsert: false
-        });
-    } catch (error) {
-      console.error("[VIDEO_UPLOAD] upload storage erro inesperado", error);
-      throw error;
-    }
+    const uploadResult = await supabase.storage
+      .from("videos")
+      .upload(nextStoragePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
 
     console.log("[VIDEO_UPLOAD] upload storage concluido", uploadResult.data);
 
@@ -148,9 +140,7 @@ export function VideoForm({
     if (file && file.size > 0) {
       try {
         setIsUploading(true);
-        console.log("[VIDEO_UPLOAD] chamando uploadVideoFile()");
         const uploadedFile = await uploadVideoFile(file);
-        console.log("[VIDEO_UPLOAD] uploadVideoFile() concluido", uploadedFile);
         nextStoragePath = uploadedFile.storagePath;
         nextOriginalFilename = uploadedFile.originalFilename;
         nextFileSize = uploadedFile.fileSize;
@@ -179,30 +169,8 @@ export function VideoForm({
     formData.set("uploaded_at", nextUploadedAt);
     setIsSaving(true);
     setStatusMessage("Salvando registro...");
-    console.log("[VIDEO_UPLOAD] chamando createVideo()", {
-      storagePath: nextStoragePath,
-      originalFilename: nextOriginalFilename,
-      fileSize: nextFileSize,
-      mimeType: nextMimeType,
-      uploadedAt: nextUploadedAt
-    });
 
-    let result;
-
-    try {
-      result = await action(formData);
-      console.log("[VIDEO_UPLOAD] createVideo() concluido", result);
-    } catch (error) {
-      console.error("[VIDEO_UPLOAD] createVideo() erro inesperado", error);
-      setUploadError(
-        error instanceof Error
-          ? `Erro inesperado ao salvar registro: ${error.message}`
-          : "Erro inesperado ao salvar registro."
-      );
-      setStatusMessage("");
-      setIsSaving(false);
-      return;
-    }
+    const result = await action(formData);
 
     if (result && "error" in result && result.error) {
       setUploadError(result.error);

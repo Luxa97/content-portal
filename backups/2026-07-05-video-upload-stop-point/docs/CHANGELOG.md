@@ -13,7 +13,6 @@ Historico relevante do Content Portal, organizado por data e versao.
 - Adicionados logs temporarios `[auth-debug]` para identificar a etapa exata do fluxo de login/cadastro.
 - Adicionados logs temporarios `[VIDEO_UPLOAD]` para diagnosticar upload, dados do insert e resposta real do Supabase.
 - Criada migration `supabase/video-insert-diagnostics-migration.sql` para garantir o insert minimo em `public.videos`.
-- Reforcados logs do fluxo de upload para identificar se a parada ocorre no `storage.upload`, na chamada `createVideo()` ou no insert.
 
 ## 2026-07-04 - v0.6.1 - Upload de video como fluxo principal
 
